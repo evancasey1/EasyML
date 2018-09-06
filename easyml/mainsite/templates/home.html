@@ -13,17 +13,15 @@
   Hi {{ user.username }}!
   <p><a href="{% url 'logout' %}">Log out</a></p>
   <body>
-    <div class="container-fluid">
-    <div class="row">
+      <div class="container-fluid">
       <div class="col-sm-2">
       {% block sidebar %}
         <ul class="sidebar-nav">
-          <li><a href="{% url 'home' %}">Home</a></li>
-          <li><a href="">Upload Data</a></li>
-          <li><a href="">Manage Models</a></li>
+          <li class="sidebar-row"><a href="{% url 'home' %}">Home</a></li>
+          <li class="sidebar-row"><a href="">Upload Data</a></li>
+          <li class="sidebar-row"><a href="">Manage Models</a></li>
         </ul>
       {% endblock %}
-      </div>
     </div>
   </div>
   </body>
