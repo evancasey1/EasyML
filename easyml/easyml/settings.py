@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mainsite',
+    'bootstrap4',
 ]
 
 AUTH_USER_MODEL = 'mainsite.CustomUser'
