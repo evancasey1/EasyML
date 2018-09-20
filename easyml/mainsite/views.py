@@ -34,32 +34,29 @@ def upload_csv(request):
             messages.error(request, "Uploaded file is too big (%.2f MB)" % (csv_file.size / (1000 * 1000),))
             return HttpResponseRedirect(reverse("upload_csv"))
 
+        csv_name = csv_file.name[:-4]
         user = request.user
-        if CsvFile.objects.filter(name=csv_file.name, file_owner=user).exists():
-            messages.error(request, 'A File with this name already exists')
-            return HttpResponseRedirect(reverse("upload_csv"))
+        if CsvFile.objects.filter(raw_name=csv_file.name, file_owner=user).exists():
+            csv_name = (csv_name + ' (%s)') % CsvFile.objects.filter(raw_name=csv_file.name, file_owner=user).count()
 
-        csv_obj = CsvFile(name=csv_file.name, file_owner=user)
+        print(csv_file.name)
+        print(csv_name)
+        csv_obj = CsvFile(raw_name=csv_file.name, display_name=csv_name, file_owner=user)
         csv_obj.save()
 
-        file_data = csv_file.read().decode("utf-8")
+        file_data = pd.read_csv(csv_file)
+        columns = list(file_data.columns.values)
 
         csv_data = []
-        lines = file_data.split("\n")
-        row_num = 0
-        for line in lines:
-            data_lst = line.split(',')
-            for i in range(len(data_lst)):
-                try:
-                    data_obj = CsvFileData(parent_file=csv_obj)
-                    data_obj.data = float(data_lst[i])
-                    data_obj.row_num = row_num
-                    data_obj.column_num = i
-                    csv_data.append(data_obj)
-                except:
-                    pass
-
-            row_num += 1
+        for index, row in file_data.iterrows():
+            for i in range(len(columns)):
+                header = columns[i]
+                data_obj = CsvFileData(parent_file=csv_obj)
+                data_obj.data = row[header]
+                data_obj.row_num = index
+                data_obj.column_num = i
+                data_obj.column_header = header
+                csv_data.append(data_obj)
 
         CsvFileData.objects.bulk_create(csv_data)
 

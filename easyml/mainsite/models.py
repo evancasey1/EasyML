@@ -18,7 +18,8 @@ class CsvFile(models.Model):
         null=False,
         blank=False,
         on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
+    raw_name = models.CharField(max_length=255)
+    display_name = models.CharField(max_length=255, unique=True, null=False, blank=False)
     created = models.DateTimeField(auto_now_add=True, blank=True)
 
 class CsvFileData(models.Model):
