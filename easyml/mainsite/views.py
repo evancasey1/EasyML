@@ -39,8 +39,6 @@ def upload_csv(request):
         if CsvFile.objects.filter(raw_name=csv_file.name, file_owner=user).exists():
             csv_name = (csv_name + ' (%s)') % CsvFile.objects.filter(raw_name=csv_file.name, file_owner=user).count()
 
-        print(csv_file.name)
-        print(csv_name)
         csv_obj = CsvFile(raw_name=csv_file.name, display_name=csv_name, file_owner=user)
         csv_obj.save()
 
@@ -48,12 +46,12 @@ def upload_csv(request):
         columns = list(file_data.columns.values)
 
         csv_data = []
-        for index, row in file_data.iterrows():
+        for row_index, row in file_data.iterrows():
             for i in range(len(columns)):
                 header = columns[i]
                 data_obj = CsvFileData(parent_file=csv_obj)
                 data_obj.data = row[header]
-                data_obj.row_num = index
+                data_obj.row_num = row_index
                 data_obj.column_num = i
                 data_obj.column_header = header
                 csv_data.append(data_obj)
