@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import traceback
 
 from .models import CsvFile, CsvFileData
@@ -49,6 +50,8 @@ def upload_csv(request):
         for row_index, row in file_data.iterrows():
             for i in range(len(columns)):
                 header = columns[i]
+                if pd.isna(row[header]):
+                    continue
                 data_obj = CsvFileData(parent_file=csv_obj)
                 data_obj.data = row[header]
                 data_obj.row_num = row_index
