@@ -26,7 +26,7 @@ SECRET_KEY = '#%=w+0cyqm=tcmsibtgwelblop#60ijdu&7k$t=v*9o)41mbx^'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # Application definition
 
@@ -54,6 +54,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'easyml.urls'
+
+TEMPLATE_CONTEXT_PROCESSORS = [
+    'django.contrib.messages.context_processors.messages'
+]
 
 TEMPLATES = [
     {

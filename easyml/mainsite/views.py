@@ -65,6 +65,7 @@ def upload_csv(request):
         print(traceback.format_exc(e))
         messages.error(request, "Unable to upload file. " + repr(e))
 
+    messages.success(request, "File successfully uploaded")
     return HttpResponseRedirect("/")
 
 def manage_data(request):

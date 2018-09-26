@@ -1,5 +1,13 @@
 {% extends 'base.html' %}
 
+{% load bootstrap4 %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
 {% block title %}Home{% endblock %}
 
 {% block content %}
