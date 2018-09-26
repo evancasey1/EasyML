@@ -12,7 +12,7 @@ from .forms import CustomUserCreationForm
 
 # Create your views here.
 def index(request):
-    return HttpResponse("This is the EasyBakeML index.")
+    return HttpResponseRedirect("/easyml")
 
 class SignUp(generic.CreateView):
     form_class = CustomUserCreationForm
@@ -66,7 +66,7 @@ def upload_csv(request):
         messages.error(request, "Unable to upload file. " + repr(e))
 
     messages.success(request, "File successfully uploaded")
-    return HttpResponseRedirect("/")
+    return HttpResponseRedirect("/easyml")
 
 def manage_data(request):
     context = {}
@@ -75,8 +75,6 @@ def manage_data(request):
         valid_files = []
 
     context['valid_files'] = valid_files
-    for f in valid_files:
-        print(f.display_name)
 
     return render(request, 'manage_data.html', context=context)
 
@@ -97,5 +95,20 @@ def delete_file(request, file_id=None):
     return HttpResponseRedirect('/easyml/manage/data')
 
 
-def rename_file(request, file_id):
+def rename_file(request):
+    file_id = request.POST.get('file_id')
+    new_name = request.POST.get('display_name')
+
+    if not (request.user == CsvFile.objects.get(id=file_id).file_owner):
+        return HttpResponseRedirect('/easyml/manage/data')
+
+    if CsvFile.objects.filter(file_owner=request.user, display_name=new_name).count() > 0:
+        messages.error(request, "A file with that name already exists")
+        return HttpResponseRedirect('/easyml/manage/data')
+
+    file_obj = CsvFile.objects.get(id=file_id)
+    file_obj.display_name = new_name
+    file_obj.save()
+
+    messages.success(request, "File successfully renamed")
     return HttpResponseRedirect('/easyml/manage/data')

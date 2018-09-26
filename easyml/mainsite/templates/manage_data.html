@@ -15,8 +15,12 @@
 <body>
 <ul>
     {% for file in valid_files %}
-        <li>{{ file.display_name }}</li>
-        <a class="btn btn-danger" href="{% url 'delete_file' file.id %}">Delete</a> <a class="btn btn-default btn-primary" href="{% url 'rename_file' file.id %}">Rename</a>
+        <form action="rename_file/" method="post">
+        {% csrf_token %}
+            <li><input type="text" name="display_name" value="{{ file.display_name }}"></li>
+            <input type="text" name="file_id" value="{{ file.id }}" hidden>
+            <a class="btn btn-danger" href="{% url 'delete_file' file.id %}">Delete</a> <input class="btn btn-primary" type="submit" value="Rename">
+        </form>
         <hr>
     {% endfor %}
 </ul>
