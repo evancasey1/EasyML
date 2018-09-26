@@ -10,16 +10,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Manage Data</title>
+    <title>Select Data</title>
 </head>
 <body>
+<h3>Select file to use for training</h3>
+<br>
 <ul>
     {% for file in valid_files %}
-        <form action="rename-file/" method="post">
-        {% csrf_token %}
-            <li><input type="text" name="display_name" value="{{ file.display_name }}"></li>
+        <form action="/easyml/train/setup/select-columns/" method="post">
+            {% csrf_token %}
+            <li>{{ file.display_name }}</li>
             <input type="text" name="file_id" value="{{ file.id }}" hidden>
-            <a class="btn btn-danger" href="{% url 'delete_file' file.id %}">Delete</a> <input class="btn btn-primary" type="submit" value="Rename">
+            <input class="btn btn-success" type="submit" value="Select">
         </form>
         <hr>
     {% endfor %}

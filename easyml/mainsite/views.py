@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import traceback
 
+from helpers.constants import DESIGNATION
+
 from .models import CsvFile, CsvFileData
 from django.shortcuts import render
 from django.contrib import messages
@@ -112,3 +114,57 @@ def rename_file(request):
 
     messages.success(request, "File successfully renamed")
     return HttpResponseRedirect('/easyml/manage/data')
+
+def select_csv(request):
+    context = {}
+    valid_files = CsvFile.objects.filter(file_owner=request.user)
+    if not valid_files:
+        valid_files = []
+
+    context['valid_files'] = valid_files
+
+    return render(request, 'select_csv.html', context=context)
+
+def select_columns(request):
+    print(request.POST)
+    context = {}
+    file_id = int(request.POST.get('file_id'))
+    if request.user != CsvFile.objects.get(id=file_id).file_owner:
+        return HttpResponseRedirect('/easyml/train/setup/select-csv')
+
+    headers = CsvFileData.objects.filter(parent_file_id=file_id).values_list('column_header', flat=True).distinct()
+    context['headers'] = headers
+    context['file_id'] = file_id
+
+    return render(request, 'select_columns.html', context=context)
+
+def create_data(request):
+    designation_map = {
+        'ignore': DESIGNATION.IGNORE,
+        'input': DESIGNATION.INPUT,
+        'target': DESIGNATION.TARGET
+    }
+
+    file_id = int(request.POST.get('file_id'))
+    header_map = {}
+    for prop in request.POST:
+        if prop == 'csrfmiddlewaretoken' or prop == 'file_id':
+            continue
+
+        header_map[prop] = designation_map[request.POST.get(prop)]
+
+    des_values = list(header_map.values())
+    if DESIGNATION.TARGET not in des_values:
+        messages.error(request, "A target column is required")
+        return HttpResponseRedirect('/easyml/train/setup/select-columns')
+
+    if DESIGNATION.INPUT not in des_values:
+        messages.error(request, "An input column is required")
+        return HttpResponseRedirect('/easyml/train/setup/select-columns')
+
+    csv_data = CsvFileData.objects.filter(parent_file_id=file_id)
+    for header in header_map:
+        csv_data.filter(column_header=header).update(designation=header_map[header])
+
+    # Will train model later
+    return HttpResponseRedirect('/easyml/')

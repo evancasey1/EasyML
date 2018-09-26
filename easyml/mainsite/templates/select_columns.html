@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+{% load bootstrap4 %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Columns</title>
+</head>
+<body>
+    <form action="/easyml/train/setup/create-data/" method="post">
+    {% csrf_token %}
+    <input type="text" name="file_id" value="{{ file_id }}" hidden>
+    <table>
+        <tr>
+        {% for header in headers %}
+            <th>{{ header }}</th>
+        {% endfor %}
+        </tr>
+        <tr>
+            {% for header in headers %}
+            <th>
+                <select name="{{ header }}">
+                  <option value="ignore">Ignore</option>
+                  <option value="input">Input</option>
+                  <option value="target">Target</option>
+                </select>
+            </th>
+        {% endfor %}
+        </tr>
+    </table>
+    <input class="btn btn-success" type="submit" value="Submit">
+    </form>
+</body>
+</html>
