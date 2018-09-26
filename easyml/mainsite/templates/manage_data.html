@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% load bootstrap4 %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Data</title>
+</head>
+<body>
+<ul>
+    {% for file in valid_files %}
+        <li>{{ file.display_name }}</li>
+        <a class="btn btn-danger" href="{% url 'delete_file' file.id %}">Delete</a> <a class="btn btn-default btn-primary" href="{% url 'rename_file' file.id %}">Rename</a>
+        <hr>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'home' %}">Home</a>
+
+</body>
+</html>

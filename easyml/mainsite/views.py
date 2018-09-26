@@ -66,3 +66,35 @@ def upload_csv(request):
         messages.error(request, "Unable to upload file. " + repr(e))
 
     return HttpResponseRedirect("/")
+
+def manage_data(request):
+    context = {}
+    valid_files = CsvFile.objects.filter(file_owner=request.user)
+    if not valid_files:
+        valid_files = []
+
+    context['valid_files'] = valid_files
+    for f in valid_files:
+        print(f.display_name)
+
+    return render(request, 'manage_data.html', context=context)
+
+def delete_file(request, file_id=None):
+    if not file_id:
+        messages.error(request, "Unable to delete file - Invalid File ID")
+        return HttpResponseRedirect('manage_data.html')
+
+    file_id = int(file_id)
+    file_obj = CsvFile.objects.get(id=file_id)
+
+    if not file_obj.file_owner == request.user:
+        messages.error(request, "Unable to delete file - Invalid Permissions")
+        return HttpResponseRedirect('manage_data.html')
+
+    file_obj.delete()
+    messages.success(request, "File deleted successfully")
+    return HttpResponseRedirect('/easyml/manage/data')
+
+
+def rename_file(request, file_id):
+    return HttpResponseRedirect('/easyml/manage/data')
