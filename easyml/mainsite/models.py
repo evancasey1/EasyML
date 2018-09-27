@@ -36,3 +36,7 @@ class CsvFileData(models.Model):
     column_num = models.IntegerField(null=False, blank=False)
     designation = models.IntegerField(null=True, blank=True)
 
+class MLModel(models.Model):
+    name = models.CharField(max_length=255)
+    model_data = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
