@@ -34,7 +34,25 @@
         {% endfor %}
         </tr>
     </table>
+    <hr>
+    <h4>Algorithm: </h4>
+    <select class="align-r">
+        <option value="1">Linear Regression</option>
+        <option value="2">Logistic Regression</option>
+        <option value="3">Linear Discriminant Analysis</option>
+        <option value="4">Regression Trees</option>
+        <option value="5">Naive Bayes</option>
+        <option value="6">Random Forest</option>
+        <option value="7">K Nearest Neighbors</option>
+        <option value="8">Support Vector Machines</option>
+    </select>
+    <br>
+    <hr>
     <input class="btn btn-success" type="submit" value="Submit">
     </form>
+<table style="height:100px">
+    <td class="align-bottom"><a href="{% url 'home' %}">Home</a></td>
+</table>
+
 </body>
 </html>

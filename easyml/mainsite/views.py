@@ -32,6 +32,7 @@ def upload_csv(request):
         if not csv_file.name.endswith('.csv'):
             messages.error(request, 'File is not CSV type')
             return HttpResponseRedirect(reverse("upload_csv"))
+
         # if file is too large, return
         if csv_file.multiple_chunks():
             messages.error(request, "Uploaded file is too big (%.2f MB)" % (csv_file.size / (1000 * 1000),))
@@ -61,7 +62,9 @@ def upload_csv(request):
                 data_obj.column_header = header
                 csv_data.append(data_obj)
 
-        CsvFileData.objects.bulk_create(csv_data)
+            if len(csv_data) > 500:
+                CsvFileData.objects.bulk_create(csv_data)
+                csv_data = []
 
     except Exception as e:
         print(traceback.format_exc(e))
