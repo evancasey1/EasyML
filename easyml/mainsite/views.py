@@ -126,7 +126,6 @@ def select_csv(request):
     return render(request, 'select_csv.html', context=context)
 
 def select_columns(request):
-    print(request.POST)
     context = {}
     file_id = int(request.POST.get('file_id'))
     if request.user != CsvFile.objects.get(id=file_id).file_owner:
@@ -154,13 +153,20 @@ def create_data(request):
         header_map[prop] = designation_map[request.POST.get(prop)]
 
     des_values = list(header_map.values())
+    error_context = request.POST.dict()
+    error_context['headers'] = header_map.keys()
+
     if DESIGNATION.TARGET not in des_values:
         messages.error(request, "A target column is required")
-        return HttpResponseRedirect('/easyml/train/setup/select-columns')
+        return render(request, 'select_columns.html', context=error_context)
 
     if DESIGNATION.INPUT not in des_values:
         messages.error(request, "An input column is required")
-        return HttpResponseRedirect('/easyml/train/setup/select-columns')
+        return render(request, 'select_columns.html', context=error_context)
+
+    if des_values.count(DESIGNATION.TARGET) > 1:
+        messages.error(request, "Only one target column is allowed")
+        return render(request, 'select_columns.html', context=error_context)
 
     csv_data = CsvFileData.objects.filter(parent_file_id=file_id)
     for header in header_map:
