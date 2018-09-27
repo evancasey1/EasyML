@@ -85,9 +85,6 @@ def manage_data(request):
     return render(request, 'manage_data.html', context=context)
 
 def delete_file(request, file_id=None):
-    if "GET" == request.method:
-        return render(request, "manage_data.html", {})
-
     if not file_id:
         messages.error(request, "Unable to delete file - Invalid File ID")
         return HttpResponseRedirect('manage_data.html')
