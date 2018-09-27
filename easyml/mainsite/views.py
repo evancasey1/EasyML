@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 import traceback
 
-from helpers.constants import DESIGNATION
+from helpers.constants import COLUMN_TYPE
+from helpers.model_builder import create_model
 
 from .models import CsvFile, CsvFileData
 from django.shortcuts import render
@@ -84,6 +85,9 @@ def manage_data(request):
     return render(request, 'manage_data.html', context=context)
 
 def delete_file(request, file_id=None):
+    if "GET" == request.method:
+        return render(request, "manage_data.html", {})
+
     if not file_id:
         messages.error(request, "Unable to delete file - Invalid File ID")
         return HttpResponseRedirect('manage_data.html')
@@ -101,6 +105,9 @@ def delete_file(request, file_id=None):
 
 
 def rename_file(request):
+    if "GET" == request.method:
+        return render(request, "manage_data.html", {})
+
     file_id = request.POST.get('file_id')
     new_name = request.POST.get('display_name')
 
@@ -129,6 +136,9 @@ def select_csv(request):
     return render(request, 'select_csv.html', context=context)
 
 def select_columns(request):
+    if "GET" == request.method:
+        return render(request, "home.html", {})
+
     context = {}
     file_id = int(request.POST.get('file_id'))
     if request.user != CsvFile.objects.get(id=file_id).file_owner:
@@ -141,16 +151,20 @@ def select_columns(request):
     return render(request, 'select_columns.html', context=context)
 
 def create_data(request):
+    if "GET" == request.method:
+        return render(request, "home.html", {})
+
     designation_map = {
-        'ignore': DESIGNATION.IGNORE,
-        'input': DESIGNATION.INPUT,
-        'target': DESIGNATION.TARGET
+        'ignore': COLUMN_TYPE.IGNORE,
+        'input': COLUMN_TYPE.INPUT,
+        'target': COLUMN_TYPE.TARGET
     }
 
     file_id = int(request.POST.get('file_id'))
     header_map = {}
+    ignore_keys = ['csrfmiddlewaretoken', 'file_id', 'algorithm']
     for prop in request.POST:
-        if prop == 'csrfmiddlewaretoken' or prop == 'file_id':
+        if prop in ignore_keys:
             continue
 
         header_map[prop] = designation_map[request.POST.get(prop)]
@@ -159,21 +173,23 @@ def create_data(request):
     error_context = request.POST.dict()
     error_context['headers'] = header_map.keys()
 
-    if DESIGNATION.TARGET not in des_values:
+    if COLUMN_TYPE.TARGET not in des_values:
         messages.error(request, "A target column is required")
         return render(request, 'select_columns.html', context=error_context)
 
-    if DESIGNATION.INPUT not in des_values:
+    if COLUMN_TYPE.INPUT not in des_values:
         messages.error(request, "An input column is required")
         return render(request, 'select_columns.html', context=error_context)
 
-    if des_values.count(DESIGNATION.TARGET) > 1:
+    if des_values.count(COLUMN_TYPE.TARGET) > 1:
         messages.error(request, "Only one target column is allowed")
         return render(request, 'select_columns.html', context=error_context)
 
     csv_data = CsvFileData.objects.filter(parent_file_id=file_id)
     for header in header_map:
-        csv_data.filter(column_header=header).update(designation=header_map[header])
+        csv_data.filter(column_header=header).update(type=header_map[header])
 
-    # Will train model later
+    algorithm_type = int(request.POST.get('algorithm'))
+    create_model(algorithm_type, file_id)
+
     return HttpResponseRedirect('/easyml/')

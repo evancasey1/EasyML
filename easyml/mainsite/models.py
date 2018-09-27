@@ -34,7 +34,7 @@ class CsvFileData(models.Model):
     data = models.FloatField(null=True, blank=True)
     row_num = models.IntegerField(null=False, blank=False)
     column_num = models.IntegerField(null=False, blank=False)
-    designation = models.IntegerField(null=True, blank=True)
+    type = models.IntegerField(null=True, blank=True)
 
 class MLModel(models.Model):
     name = models.CharField(max_length=255)
