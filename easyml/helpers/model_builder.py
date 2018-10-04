@@ -19,6 +19,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.naive_bayes import GaussianNB
+from sklearn import svm
 
 from .constants import COLUMN_TYPE, ALGORITHM, algorithm_name_map
 from mainsite.models import CsvFile, CsvFileData, MLModel
@@ -69,8 +70,8 @@ def create_model(algorithm_type, file_id):
     elif algorithm_type == ALGORITHM.RANDOM_FOREST_REGRESSOR:
         model = create_random_forest_regressor(input_df, target_df)
 
-    elif algorithm_type == ALGORITHM.SUPPORT_VECTOR_MACHINES:
-        pass
+    elif algorithm_type == ALGORITHM.SUPPORT_VECTOR_MACHINE:
+        model = create_support_vector_machine(input_df, target_df)
 
     if model:
         save_model(model, name, file_id)
@@ -220,6 +221,12 @@ def create_nearest_centroid(input_df, target_df):
     print("Score: ", clf.score(x_train, y_train))
 
     # Final model
+    clf.fit(input_df, target_df)
+
+    return clf
+
+def create_support_vector_machine(input_df, target_df):
+    clf = svm.SVC(gamma='scale')
     clf.fit(input_df, target_df)
 
     return clf

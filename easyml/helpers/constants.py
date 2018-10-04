@@ -12,7 +12,7 @@ class ALGORITHM:
     RANDOM_FOREST_CLASSIFIER = 6
     RANDOM_FOREST_REGRESSOR = 7
     K_NEAREST_NEIGHBORS = 8
-    SUPPORT_VECTOR_MACHINES = 9
+    SUPPORT_VECTOR_MACHINE = 9
     NEAREST_CENTROID = 10
 
 
@@ -24,7 +24,7 @@ algorithm_name_map = {
     str(ALGORITHM.GAUSSIAN_NAIVE_BAYES): 'Gaussian Naive Bayes',
     str(ALGORITHM.RANDOM_FOREST_CLASSIFIER): 'Random Forest Classifier',
     str(ALGORITHM.K_NEAREST_NEIGHBORS): 'K Nearest Neighbors',
-    str(ALGORITHM.SUPPORT_VECTOR_MACHINES): 'Support Vector Machines',
+    str(ALGORITHM.SUPPORT_VECTOR_MACHINE): 'Support Vector Machine',
     str(ALGORITHM.NEAREST_CENTROID): 'Nearest Centroid',
     str(ALGORITHM.RANDOM_FOREST_REGRESSOR): 'Random Forest Regressor',
 }
