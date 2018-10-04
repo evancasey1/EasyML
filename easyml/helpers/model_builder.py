@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import traceback
 import msgpack
+import math
 import pickle
 
 from pprint import pprint
@@ -16,6 +17,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.model_selection import cross_val_score
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
 
 from .constants import COLUMN_TYPE, ALGORITHM, algorithm_name_map
 from mainsite.models import CsvFile, CsvFileData, MLModel
@@ -43,7 +46,7 @@ def create_model(algorithm_type, file_id):
         model = create_linear_regression_model(input_df, target_df)
 
     elif algorithm_type == ALGORITHM.K_NEAREST_NEIGHBORS:
-        model = create_k_nearest_neightbors_model(input_df, target_df)
+        model = create_k_nearest_neighbors_model(input_df, target_df)
 
     elif algorithm_type == ALGORITHM.LOGISTIC_REGRESSION:
         model = create_logistic_regression_model(input_df, target_df)
@@ -57,11 +60,11 @@ def create_model(algorithm_type, file_id):
     elif algorithm_type == ALGORITHM.DECISION_TREE:
         model = create_decision_tree(input_df, target_df)
 
-    elif algorithm_type == ALGORITHM.NAIVE_BAYES:
-        pass
+    elif algorithm_type == ALGORITHM.GAUSSIAN_NAIVE_BAYES:
+        model = create_gaussian_naive_bayes(input_df, target_df)
 
     elif algorithm_type == ALGORITHM.RANDOM_FOREST:
-        pass
+        model = create_random_forest_classifier(input_df, target_df)
 
     elif algorithm_type == ALGORITHM.SUPPORT_VECTOR_MACHINES:
         pass
@@ -76,7 +79,7 @@ def save_model(model, name, file_id):
     model_obj.name = name
     model_obj.data = serialized_data
     model_obj.parent_file = CsvFile.objects.get(id=file_id)
-    model_obj.save()
+    #model_obj.save()
 
 def create_linear_regression_model(input_df, target_df):
     lin_reg = LinearRegression().fit(input_df, target_df)
@@ -109,24 +112,66 @@ def create_linear_discriminant_analysis(input_df, target_df):
 def create_decision_tree(input_df, target_df):
     x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
     r2_lst = []
-    depth_start = 1
-    depth_max = 10
+    depth_mul = 10
+    depth_iter = 10
+    depth_start = 1.0 / (depth_mul ** (depth_iter / 2))
+
+    depth_lst = []
+    for i in range(depth_iter):
+        depth_lst.append(depth_start * (depth_mul ** i))
 
     # Select model with best r^2 and least depth
-    for i in range(depth_start, depth_max + 1):
-        dt_regr = DecisionTreeRegressor(max_depth=i)
+    for depth in depth_lst:
+        dt_regr = DecisionTreeRegressor(max_depth=depth)
         dt_regr.fit(x_train, y_train)
         r2_lst.append(dt_regr.score(x_valid, y_valid))
 
-    max_depth, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
+    depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
+    best_depth = depth_lst[depth_index]
 
-    print("Depth:", max_depth)
+    print("Depth:", best_depth)
     print("r2:", r2)
 
-    dt_regr_final = DecisionTreeRegressor(max_depth=max_depth).fit(input_df, target_df)
+    dt_regr_final = DecisionTreeRegressor(max_depth=best_depth).fit(input_df, target_df)
     return dt_regr_final
 
-def create_k_nearest_neightbors_model(input_df, target_df):
+def create_gaussian_naive_bayes(input_df, target_df):
+    x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
+
+    gnb = GaussianNB()
+    gnb.fit(x_train, y_train.values.ravel())
+
+    return gnb
+
+def create_random_forest_classifier(input_df, target_df):
+    x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
+
+    n_est = 100
+    r2_lst = []
+    depth_mul = 10
+    depth_iter = 10
+    depth_start = 1.0/(depth_mul**(depth_iter/2))
+
+    depth_lst = []
+    for i in range(depth_iter):
+        depth_lst.append(depth_start * (depth_mul**i))
+
+    # Select model with best r^2 and least depth
+    for depth in depth_lst:
+        rf_clf = RandomForestClassifier(n_estimators=n_est, max_depth=depth, oob_score=True)
+        rf_clf.fit(x_train, y_train.values.ravel())
+        r2_lst.append(rf_clf.oob_score_)
+
+    depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
+    best_depth = depth_lst[depth_index]
+
+    print("Depth:", best_depth)
+    print("r2:", r2)
+
+    rf_clf = RandomForestClassifier(n_estimators=n_est, max_depth=best_depth).fit(input_df, target_df.values.ravel())
+    return rf_clf
+
+def create_k_nearest_neighbors_model(input_df, target_df):
     neighbors = NearestNeighbors(n_neighbors=2, algorithm='ball_tree').fit(input_df)
     distances, indices = neighbors.kneighbors(input_df)
     print("Distances:", distances)
