@@ -83,7 +83,7 @@ def save_model(model, name, file_id):
     model_obj.name = name
     model_obj.data = serialized_data
     model_obj.parent_file = CsvFile.objects.get(id=file_id)
-    #model_obj.save()
+    model_obj.save()
 
 def create_linear_regression_model(input_df, target_df):
     lin_reg = LinearRegression().fit(input_df, target_df)
