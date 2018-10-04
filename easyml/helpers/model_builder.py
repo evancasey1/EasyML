@@ -38,7 +38,7 @@ def create_model(algorithm_type, file_id):
     target_data = file_data.filter(type=COLUMN_TYPE.TARGET)
 
     model = None
-    name = algorithm_name_map[str(algorithm_type)]
+    alg_type = algorithm_name_map[str(algorithm_type)]
 
     input_df = get_dataframe(input_data)
     target_df = get_dataframe(target_data)
@@ -74,14 +74,23 @@ def create_model(algorithm_type, file_id):
         model = create_support_vector_machine(input_df, target_df)
 
     if model:
-        save_model(model, name, file_id)
+        save_model(model, alg_type, file_id)
 
-def save_model(model, name, file_id):
+def save_model(model, alg_type, file_id):
     serialized_data = pickle.dumps(model)
 
+    parent_file = CsvFile.objects.get(id=file_id)
+    display_name = "{}: {}".format(parent_file.display_name, alg_type)
+
+    same_name_count = MLModel.objects.filter(name=parent_file.display_name, type=alg_type).count()
+    if same_name_count > 0:
+        display_name += ' ({})'.format(same_name_count)
+
     model_obj = MLModel()
-    model_obj.name = name
+    model_obj.type = alg_type
     model_obj.data = serialized_data
+    model_obj.name = parent_file.display_name
+    model_obj.display_name = display_name
     model_obj.parent_file = CsvFile.objects.get(id=file_id)
     model_obj.save()
 

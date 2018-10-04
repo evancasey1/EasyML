@@ -37,7 +37,7 @@ class CsvFileData(models.Model):
     type = models.IntegerField(null=True, blank=True)
 
 class MLModel(models.Model):
-    name = models.CharField(max_length=255)
+    type = models.CharField(max_length=255)
     data = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     parent_file = models.ForeignKey(
@@ -46,3 +46,5 @@ class MLModel(models.Model):
         null=False,
         blank=False,
         on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    display_name = models.CharField(max_length=255)
