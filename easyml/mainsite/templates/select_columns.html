@@ -37,15 +37,9 @@
     <hr>
     <h4>Algorithm: </h4>
     <select class="align-r" name="algorithm">
-        <option value="1">Linear Regression</option>
-        <option value="2">Logistic Regression</option>
-        <option value="3">Linear Discriminant Analysis</option>
-        <option value="4">Regression Trees</option>
-        <option value="5">Naive Bayes</option>
-        <option value="6">Random Forest</option>
-        <option value="7">K Nearest Neighbors</option>
-        <option value="8">Support Vector Machines</option>
-        <option value="9">Nearest Centroid</option>
+    {%  for alg in algorithms %}
+        <option value="{{ alg.num }}">{{ alg.name }}</option>
+    {% endfor %}
     </select>
     <br>
     <hr>

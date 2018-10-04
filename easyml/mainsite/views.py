@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import traceback
 
-from helpers.constants import COLUMN_TYPE
+from helpers.constants import COLUMN_TYPE, algorithm_name_map
 from helpers.model_builder import create_model
 
 from .models import CsvFile, CsvFileData
@@ -144,6 +144,12 @@ def select_columns(request):
     headers = CsvFileData.objects.filter(parent_file_id=file_id).values_list('column_header', flat=True).distinct()
     context['headers'] = headers
     context['file_id'] = file_id
+    context['algorithms'] = []
+    for alg in algorithm_name_map:
+        context['algorithms'].append({
+            'num': int(alg),
+            'name': algorithm_name_map[alg]
+        })
 
     return render(request, 'select_columns.html', context=context)
 
