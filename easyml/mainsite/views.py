@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views import generic
+from operator import itemgetter
 from .forms import CustomUserCreationForm
 
 # Create your views here.
@@ -144,12 +145,15 @@ def select_columns(request):
     headers = CsvFileData.objects.filter(parent_file_id=file_id).values_list('column_header', flat=True).distinct()
     context['headers'] = headers
     context['file_id'] = file_id
-    context['algorithms'] = []
+    alg_lst = []
     for alg in algorithm_name_map:
-        context['algorithms'].append({
+        alg_lst.append({
             'num': int(alg),
             'name': algorithm_name_map[alg]
         })
+
+    alg_lst = sorted(alg_lst, key=itemgetter('num'))
+    context['algorithms'] = alg_lst
 
     return render(request, 'select_columns.html', context=context)
 

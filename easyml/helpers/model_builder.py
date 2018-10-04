@@ -17,7 +17,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.model_selection import cross_val_score
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.naive_bayes import GaussianNB
 
 from .constants import COLUMN_TYPE, ALGORITHM, algorithm_name_map
@@ -63,8 +63,11 @@ def create_model(algorithm_type, file_id):
     elif algorithm_type == ALGORITHM.GAUSSIAN_NAIVE_BAYES:
         model = create_gaussian_naive_bayes(input_df, target_df)
 
-    elif algorithm_type == ALGORITHM.RANDOM_FOREST:
+    elif algorithm_type == ALGORITHM.RANDOM_FOREST_CLASSIFIER:
         model = create_random_forest_classifier(input_df, target_df)
+
+    elif algorithm_type == ALGORITHM.RANDOM_FOREST_REGRESSOR:
+        model = create_random_forest_regressor(input_df, target_df)
 
     elif algorithm_type == ALGORITHM.SUPPORT_VECTOR_MACHINES:
         pass
@@ -169,6 +172,34 @@ def create_random_forest_classifier(input_df, target_df):
     print("r2:", r2)
 
     rf_clf = RandomForestClassifier(n_estimators=n_est, max_depth=best_depth).fit(input_df, target_df.values.ravel())
+    return rf_clf
+
+def create_random_forest_regressor(input_df, target_df):
+    x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
+
+    n_est = 100
+    r2_lst = []
+    depth_mul = 10
+    depth_iter = 10
+    depth_start = 1.0 / (depth_mul ** (depth_iter / 2))
+
+    depth_lst = []
+    for i in range(depth_iter):
+        depth_lst.append(depth_start * (depth_mul ** i))
+
+    # Select model with best r^2 and least depth
+    for depth in depth_lst:
+        rf_clf = RandomForestRegressor(n_estimators=n_est, max_depth=depth, oob_score=True)
+        rf_clf.fit(x_train, y_train.values.ravel())
+        r2_lst.append(rf_clf.oob_score_)
+
+    depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
+    best_depth = depth_lst[depth_index]
+
+    print("Depth:", best_depth)
+    print("r2:", r2)
+
+    rf_clf = RandomForestRegressor(n_estimators=n_est, max_depth=best_depth).fit(input_df, target_df.values.ravel())
     return rf_clf
 
 def create_k_nearest_neighbors_model(input_df, target_df):
