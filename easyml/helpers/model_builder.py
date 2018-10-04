@@ -4,6 +4,7 @@ import traceback
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn import metrics
@@ -36,10 +37,15 @@ def create_model(algorithm_type, file_id):
         create_logistic_regression_model(input_df, target_df)
 
 def create_linear_regression_model(input_df, target_df):
-
     x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
 
+    # Train model
     lin_reg = LinearRegression().fit(x_train, y_train)
+
+    #Test
+
+    # Train again with full input set
+    lin_reg = LinearRegression().fit(input_df, target_df)
 
 
 def create_logistic_regression_model(input_df, target_df):
@@ -55,4 +61,7 @@ def create_logistic_regression_model(input_df, target_df):
     best_c = clf.best_params_['log_regression__C']
 
 def create_k_nearest_neightbors_model(input_df, target_df):
-    print("create_k_nearest_neightbors_model")
+    nbrs = NearestNeighbors(n_neighbors=2, algorithm='ball_tree').fit(input_df)
+    distances, indices = nbrs.kneighbors(input_df)
+    print(distances)
+    print(indices)
