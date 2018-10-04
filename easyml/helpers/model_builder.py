@@ -1,15 +1,17 @@
 import pandas as pd
 import numpy as np
 import traceback
+from pprint import pprint
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.neighbors import NearestNeighbors
+from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
-from sklearn import metrics
+
 from .constants import COLUMN_TYPE, ALGORITHM
-from mainsite.models import CsvFile, CsvFileData
+from mainsite.models import CsvFile, CsvFileData, MLModel
 from .util import get_dataframe
 
 
@@ -36,16 +38,13 @@ def create_model(algorithm_type, file_id):
     elif algorithm_type == ALGORITHM.LOGISTIC_REGRESSION:
         create_logistic_regression_model(input_df, target_df)
 
+    elif algorithm_type == ALGORITHM.NEAREST_CENTROID:
+        create_nearest_centroid(input_df, target_df)
+
 def create_linear_regression_model(input_df, target_df):
-    x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
-
-    # Train model
-    lin_reg = LinearRegression().fit(x_train, y_train)
-
-    #Test
-
-    # Train again with full input set
     lin_reg = LinearRegression().fit(input_df, target_df)
+    print(lin_reg.coef_)
+    print(lin_reg.intercept_)
 
 
 def create_logistic_regression_model(input_df, target_df):
@@ -58,10 +57,23 @@ def create_logistic_regression_model(input_df, target_df):
     gs = GridSearchCV(estimator=pipe, param_grid=parameters, cv=5)
 
     clf = gs.fit(x_train, y_train)
-    best_c = clf.best_params_['log_regression__C']
+    pprint(clf.best_params_)
 
 def create_k_nearest_neightbors_model(input_df, target_df):
-    nbrs = NearestNeighbors(n_neighbors=2, algorithm='ball_tree').fit(input_df)
-    distances, indices = nbrs.kneighbors(input_df)
-    print(distances)
-    print(indices)
+    neighbors = NearestNeighbors(n_neighbors=2, algorithm='ball_tree').fit(input_df)
+    distances, indices = neighbors.kneighbors(input_df)
+    print("Distances:", distances)
+    print("Indices:", indices)
+
+def create_nearest_centroid(input_df, target_df):
+    x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
+    clf = NearestCentroid()
+
+    clf.fit(x_train, y_train)
+    print(clf.predict(x_valid))
+    print()
+    print(clf.score(x_train, y_train))
+
+    # Final model
+    clf.fit(input_df, target_df)
+
