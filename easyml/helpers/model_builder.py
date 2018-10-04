@@ -1,6 +1,10 @@
+import json
 import pandas as pd
 import numpy as np
 import traceback
+import msgpack
+import pickle
+
 from pprint import pprint
 
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -26,26 +30,46 @@ def create_model(algorithm_type, file_id):
     input_data = file_data.filter(type=COLUMN_TYPE.INPUT)
     target_data = file_data.filter(type=COLUMN_TYPE.TARGET)
 
+    model = None
+    name = None
+
     input_df = get_dataframe(input_data)
     target_df = get_dataframe(target_data)
 
     if algorithm_type == ALGORITHM.LINEAR_REGRESSION:
-        create_linear_regression_model(input_df, target_df)
+        name = "Linear Regression"
+        model = create_linear_regression_model(input_df, target_df)
 
     elif algorithm_type == ALGORITHM.K_NEAREST_NEIGHBORS:
-        create_k_nearest_neightbors_model(input_df, target_df)
+        name = "K Nearest Neighbors"
+        model = create_k_nearest_neightbors_model(input_df, target_df)
 
     elif algorithm_type == ALGORITHM.LOGISTIC_REGRESSION:
-        create_logistic_regression_model(input_df, target_df)
+        name = "Logistic Regression"
+        model = create_logistic_regression_model(input_df, target_df)
 
     elif algorithm_type == ALGORITHM.NEAREST_CENTROID:
-        create_nearest_centroid(input_df, target_df)
+        name = "Nearest Centroid"
+        model = create_nearest_centroid(input_df, target_df)
+
+    if model:
+        save_model(model, name, file_id)
+
+def save_model(model, name, file_id):
+    serialized_data = pickle.dumps(model)
+
+    model_obj = MLModel()
+    model_obj.name = name
+    model_obj.data = serialized_data
+    model_obj.parent_file = CsvFile.objects.get(id=file_id)
+    model_obj.save()
 
 def create_linear_regression_model(input_df, target_df):
     lin_reg = LinearRegression().fit(input_df, target_df)
-    print(lin_reg.coef_)
-    print(lin_reg.intercept_)
+    print("Coef:", lin_reg.coef_)
+    print("Intercept:", lin_reg.intercept_)
 
+    return lin_reg
 
 def create_logistic_regression_model(input_df, target_df):
     x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
@@ -57,7 +81,10 @@ def create_logistic_regression_model(input_df, target_df):
     gs = GridSearchCV(estimator=pipe, param_grid=parameters, cv=5)
 
     clf = gs.fit(x_train, y_train)
-    pprint(clf.best_params_)
+    pprint("Best params:", clf.best_params_)
+
+    clf = gs.fit(input_df, target_df)
+    return clf
 
 def create_k_nearest_neightbors_model(input_df, target_df):
     neighbors = NearestNeighbors(n_neighbors=2, algorithm='ball_tree').fit(input_df)
@@ -65,15 +92,19 @@ def create_k_nearest_neightbors_model(input_df, target_df):
     print("Distances:", distances)
     print("Indices:", indices)
 
+    return neighbors
+
 def create_nearest_centroid(input_df, target_df):
     x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
     clf = NearestCentroid()
 
     clf.fit(x_train, y_train)
-    print(clf.predict(x_valid))
+    print("Predict: ", clf.predict(x_valid))
     print()
-    print(clf.score(x_train, y_train))
+    print("Score: ", clf.score(x_train, y_train))
 
     # Final model
     clf.fit(input_df, target_df)
+
+    return clf
 
