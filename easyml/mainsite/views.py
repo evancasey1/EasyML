@@ -23,7 +23,7 @@ class SignUp(generic.CreateView):
     success_url = reverse_lazy('login')
     template_name = 'signup.html'
 
-def upload_csv(request):
+def upload_csv(request, next=None):
     data = {}
     if "GET" == request.method:
         return render(request, "upload_csv.html", data)
@@ -72,8 +72,9 @@ def upload_csv(request):
         print(traceback.format_exc(e))
         messages.error(request, "Unable to upload file. " + repr(e))
 
-    messages.success(request, "File successfully uploaded")
-    return HttpResponseRedirect("/easyml")
+    #messages.success(request, "File successfully uploaded")
+
+    return HttpResponseRedirect('/easyml/')
 
 def manage_data(request):
     context = {}
@@ -209,5 +210,6 @@ def select_model(request):
 
     valid_models = MLModel.objects.filter(parent_file__in=valid_files)
     context['valid_models'] = valid_models
+    context['valid_files'] = valid_files
 
     return render(request, 'select_model.html', context=context)

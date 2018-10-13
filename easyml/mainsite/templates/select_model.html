@@ -13,19 +13,35 @@
     <title>Select Model</title>
 </head>
 <body>
-<h3>Select model for predictions</h3>
-<br>
-<ul>
-    {% for model in valid_models %}
-        <form action="/easyml/" method="post">
-            {% csrf_token %}
-            <li>{{ model.display_name }}</li>
-            <input type="text" name="model_id" value="{{ model.id }}" hidden>
-            <input class="btn btn-success" type="submit" value="Select">
-        </form>
-        <hr>
-    {% endfor %}
-</ul>
+    <h3>Select model</h3>
+
+    <select>
+        {% for model in valid_models %}
+            <option value="{{ model.id }}">{{ model.display_name }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <hr>
+    <h3>Select input file</h3>
+
+    <table style="width:100%">
+        <tr>
+            <select>
+                {% for file in valid_files %}
+                    <option value="{{ file.id }}">{{ file.display_name }}</option>
+                {% endfor %}
+            </select>
+        </tr>
+        <tr> or </tr>
+        <tr>
+            <form action="{% url "upload_csv" %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </tr>
+
+    </table>
+
 
 <a href="{% url 'home' %}">Home</a>
 
