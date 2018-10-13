@@ -78,13 +78,19 @@ def upload_csv(request, next=None):
 
 def manage_data(request):
     context = {}
-    valid_files = CsvFile.objects.filter(file_owner=request.user)
-    if not valid_files:
-        valid_files = []
+    valid_files = get_user_files(request.user)
 
     context['valid_files'] = valid_files
 
     return render(request, 'manage_data.html', context=context)
+
+def manage_models(request):
+    context = {}
+    valid_models = get_user_models(request.user)
+
+    context['valid_models'] = valid_models
+
+    return render(request, 'manage_models.html', context=context)
 
 def delete_file(request, file_id=None):
     if not file_id:
@@ -123,6 +129,44 @@ def rename_file(request):
 
     messages.success(request, "File successfully renamed")
     return HttpResponseRedirect('/easyml/manage/data')
+
+def delete_model(request, model_id=None):
+    if not model_id:
+        messages.error(request, "Unable to delete model - Invalid Model ID")
+        return HttpResponseRedirect('manage_models.html')
+
+    model_id = int(model_id)
+    model_obj = MLModel.objects.get(id=model_id)
+
+    if not model_obj.parent_file.file_owner == request.user:
+        messages.error(request, "Unable to delete model - Invalid Permissions")
+        return HttpResponseRedirect('manage_models.html')
+
+    model_obj.delete()
+    messages.success(request, "Model deleted successfully")
+    return HttpResponseRedirect('/easyml/manage/models')
+
+
+def rename_model(request):
+    if "GET" == request.method:
+        return render(request, "manage_data.html", {})
+
+    model_id = request.POST.get('model_id')
+    new_name = request.POST.get('display_name')
+
+    if not (request.user == MLModel.objects.get(id=model_id).parent_file.file_owner):
+        return HttpResponseRedirect('/easyml/manage/models')
+
+    if MLModel.objects.filter(parent_file__file_owner=request.user, display_name=new_name).count() > 0:
+        messages.error(request, "A model with that name already exists")
+        return HttpResponseRedirect('/easyml/manage/models')
+
+    model_obj = MLModel.objects.get(id=model_id)
+    model_obj.display_name = new_name
+    model_obj.save()
+
+    messages.success(request, "Model successfully renamed")
+    return HttpResponseRedirect('/easyml/manage/models')
 
 def select_csv(request, purpose=None):
     if not purpose:
