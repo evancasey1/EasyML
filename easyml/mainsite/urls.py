@@ -13,4 +13,5 @@ urlpatterns = [
     path('train/setup/select-csv/', views.select_csv, name='select_csv'),
     path('train/setup/select-columns/', views.select_columns, name='select_columns'),
     path('train/setup/create-data/', views.create_data, name='create_data'),
+    path('predict/select-model', views.select_model, name='select_model'),
 ]

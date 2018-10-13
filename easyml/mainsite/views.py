@@ -5,7 +5,7 @@ import traceback
 from helpers.constants import COLUMN_TYPE, algorithm_name_map
 from helpers.model_builder import create_model
 
-from .models import CsvFile, CsvFileData
+from .models import CsvFile, CsvFileData, MLModel
 from django.shortcuts import render
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
@@ -200,3 +200,14 @@ def create_data(request):
     create_model(algorithm_type, file_id)
 
     return HttpResponseRedirect('/easyml/')
+
+def select_model(request):
+    context = {}
+    valid_files = CsvFile.objects.filter(file_owner=request.user)
+    if not valid_files:
+        valid_files = []
+
+    valid_models = MLModel.objects.filter(parent_file__in=valid_files)
+    context['valid_models'] = valid_models
+
+    return render(request, 'select_model.html', context=context)

@@ -111,7 +111,8 @@ def create_logistic_regression_model(input_df, target_df):
     gs = GridSearchCV(estimator=pipe, param_grid=parameters, cv=5)
 
     clf = gs.fit(x_train, y_train)
-    pprint("Best params:", clf.best_params_)
+    print("Best params:")
+    pprint(clf.best_params_)
 
     clf = gs.fit(input_df, target_df)
     return clf
