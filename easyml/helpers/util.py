@@ -3,8 +3,11 @@ import numpy as np
 import traceback
 
 from .constants import COLUMN_TYPE, ALGORITHM
-from mainsite.models import CsvFile, CsvFileData
+from mainsite.models import *
+from helpers.constants import *
 from django.contrib import messages
+from operator import itemgetter
+
 
 def get_dataframe(qry_data):
     column_headers = qry_data.values_list('column_header', flat=True).distinct()
@@ -31,3 +34,22 @@ def set_column_types(file_id, header_map):
     csv_data = CsvFileData.objects.filter(parent_file_id=file_id)
     for header in header_map:
         csv_data.filter(column_header=header).update(type=header_map[header])
+
+
+def get_user_files(user):
+    return CsvFile.objects.filter(file_owner=user)
+
+
+def get_user_models(user):
+    user_files = get_user_files(user)
+    return MLModel.objects.filter(parent_file__in=user_files)
+
+def get_alg_lst():
+    alg_lst = []
+    for alg in algorithm_name_map:
+        alg_lst.append({
+            'num': int(alg),
+            'name': algorithm_name_map[alg]
+        })
+
+    return sorted(alg_lst, key=itemgetter('num'))

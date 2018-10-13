@@ -4,7 +4,7 @@ import traceback
 
 from helpers.constants import COLUMN_TYPE, algorithm_name_map
 from helpers.model_builder import create_model
-from helpers.util import set_column_types
+from helpers.util import *
 
 from .models import CsvFile, CsvFileData, MLModel
 from django.shortcuts import render
@@ -12,7 +12,6 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views import generic
-from operator import itemgetter
 from .forms import CustomUserCreationForm
 
 # Create your views here.
@@ -156,15 +155,7 @@ def select_columns_and_alg(request):
     headers = CsvFileData.objects.filter(parent_file_id=file_id).values_list('column_header', flat=True).distinct()
     context['headers'] = headers
     context['file_id'] = file_id
-    alg_lst = []
-    for alg in algorithm_name_map:
-        alg_lst.append({
-            'num': int(alg),
-            'name': algorithm_name_map[alg]
-        })
-
-    alg_lst = sorted(alg_lst, key=itemgetter('num'))
-    context['algorithms'] = alg_lst
+    context['algorithms'] = get_alg_lst()
 
     return render(request, 'select_columns_and_alg.html', context=context)
 
@@ -181,8 +172,8 @@ def select_columns_and_model(request):
     context['headers'] = headers
     context['file_id'] = file_id
 
-    valid_files = CsvFile.objects.filter(file_owner=request.user)
-    valid_models = MLModel.objects.filter(parent_file__in=valid_files)
+    valid_files = get_user_files(request.user)
+    valid_models = get_user_models(request.user)
     context['valid_models'] = valid_models
     context['valid_files'] = valid_files
 
@@ -209,6 +200,7 @@ def create_data(request):
 
     error_context = request.POST.dict()
     error_context['headers'] = header_map.keys()
+    error_context['algorithms'] = get_alg_lst()
 
     try:
         set_column_types(file_id, header_map)
@@ -223,13 +215,9 @@ def create_data(request):
 
 def select_model(request):
     context = {}
-    valid_files = CsvFile.objects.filter(file_owner=request.user)
-    if not valid_files:
-        valid_files = []
 
-    valid_models = MLModel.objects.filter(parent_file__in=valid_files)
-    context['valid_models'] = valid_models
-    context['valid_files'] = valid_files
+    context['valid_models'] = get_user_models(request.user)
+    context['valid_files'] = get_user_files(request.user)
 
     return render(request, 'select_model.html', context=context)
 
@@ -257,6 +245,7 @@ def run_model(request):
 
     error_context = request.POST.dict()
     error_context['headers'] = header_map.keys()
+    error_context['valid_models'] = get_user_models(request.user)
 
     try:
         set_column_types(file_id, header_map)
