@@ -262,7 +262,7 @@ def run_model(request):
         set_column_types(file_id, header_map)
     except Exception as e:
         messages.error(request, str(e))
-        return render(request, 'select_columns_and_alg.html', context=error_context)
+        return render(request, 'select_columns_and_model.html', context=error_context)
 
     print("File: {}, Model: {}".format(file_id, model_id))
 
