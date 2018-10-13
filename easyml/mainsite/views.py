@@ -4,6 +4,7 @@ import traceback
 
 from helpers.constants import COLUMN_TYPE, algorithm_name_map
 from helpers.model_builder import create_model
+from helpers.util import set_column_types
 
 from .models import CsvFile, CsvFileData, MLModel
 from django.shortcuts import render
@@ -124,17 +125,26 @@ def rename_file(request):
     messages.success(request, "File successfully renamed")
     return HttpResponseRedirect('/easyml/manage/data')
 
-def select_csv(request):
+def select_csv(request, purpose=None):
+    if not purpose:
+        return HttpResponseRedirect('/easyml/')
+
     context = {}
     valid_files = CsvFile.objects.filter(file_owner=request.user)
     if not valid_files:
         valid_files = []
 
     context['valid_files'] = valid_files
+    if purpose == 'train':
+        context['title'] = "Select file to use for training"
+        context['form_action'] = "select_columns_and_alg"
+    else:
+        context['title'] = "Select file to use for model input"
+        context['form_action'] = "select_columns_and_model"
 
     return render(request, 'select_csv.html', context=context)
 
-def select_columns(request):
+def select_columns_and_alg(request):
     if "GET" == request.method:
         return render(request, "home.html", {})
 
@@ -156,7 +166,27 @@ def select_columns(request):
     alg_lst = sorted(alg_lst, key=itemgetter('num'))
     context['algorithms'] = alg_lst
 
-    return render(request, 'select_columns.html', context=context)
+    return render(request, 'select_columns_and_alg.html', context=context)
+
+def select_columns_and_model(request):
+    if "GET" == request.method:
+        return render(request, "home.html", {})
+
+    context = {}
+    file_id = int(request.POST.get('file_id'))
+    if request.user != CsvFile.objects.get(id=file_id).file_owner:
+        return HttpResponseRedirect('/easyml/train/setup/select-csv')
+
+    headers = CsvFileData.objects.filter(parent_file_id=file_id).values_list('column_header', flat=True).distinct()
+    context['headers'] = headers
+    context['file_id'] = file_id
+
+    valid_files = CsvFile.objects.filter(file_owner=request.user)
+    valid_models = MLModel.objects.filter(parent_file__in=valid_files)
+    context['valid_models'] = valid_models
+    context['valid_files'] = valid_files
+
+    return render(request, 'select_columns_and_model.html', context=context)
 
 def create_data(request):
     if "GET" == request.method:
@@ -177,25 +207,14 @@ def create_data(request):
 
         header_map[prop] = designation_map[request.POST.get(prop)]
 
-    des_values = list(header_map.values())
     error_context = request.POST.dict()
     error_context['headers'] = header_map.keys()
 
-    if COLUMN_TYPE.TARGET not in des_values:
-        messages.error(request, "A target column is required")
-        return render(request, 'select_columns.html', context=error_context)
-
-    if COLUMN_TYPE.INPUT not in des_values:
-        messages.error(request, "An input column is required")
-        return render(request, 'select_columns.html', context=error_context)
-
-    if des_values.count(COLUMN_TYPE.TARGET) > 1:
-        messages.error(request, "Only one target column is allowed")
-        return render(request, 'select_columns.html', context=error_context)
-
-    csv_data = CsvFileData.objects.filter(parent_file_id=file_id)
-    for header in header_map:
-        csv_data.filter(column_header=header).update(type=header_map[header])
+    try:
+        set_column_types(file_id, header_map)
+    except Exception as e:
+        messages.error(request, str(e))
+        return render(request, 'select_columns_and_alg.html', context=error_context)
 
     algorithm_type = int(request.POST.get('algorithm'))
     create_model(algorithm_type, file_id)
@@ -213,3 +232,38 @@ def select_model(request):
     context['valid_files'] = valid_files
 
     return render(request, 'select_model.html', context=context)
+
+def run_model(request):
+    if request.method == 'GET':
+        select_model(request)
+
+    context = {}
+    file_id = int(request.POST.get('file_id'))
+    model_id = request.POST.get('model_select')
+
+    designation_map = {
+        'ignore': COLUMN_TYPE.IGNORE,
+        'input': COLUMN_TYPE.INPUT,
+        'target': COLUMN_TYPE.TARGET
+    }
+
+    header_map = {}
+    ignore_keys = ['csrfmiddlewaretoken', 'file_id', 'model_select']
+    for prop in request.POST:
+        if prop in ignore_keys:
+            continue
+
+        header_map[prop] = designation_map[request.POST.get(prop)]
+
+    error_context = request.POST.dict()
+    error_context['headers'] = header_map.keys()
+
+    try:
+        set_column_types(file_id, header_map)
+    except Exception as e:
+        messages.error(request, str(e))
+        return render(request, 'select_columns_and_alg.html', context=error_context)
+
+    print("File: {}, Model: {}".format(file_id, model_id))
+
+    return render(request, 'home.html', context=context)

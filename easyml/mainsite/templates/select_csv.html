@@ -13,11 +13,11 @@
     <title>Select Data</title>
 </head>
 <body>
-<h3>Select file to use for training</h3>
+<h3>{{ title }}{{ action }}</h3>
 <br>
 <ul>
     {% for file in valid_files %}
-        <form action="/easyml/train/setup/select-columns/" method="post">
+        <form action="{% url form_action %}" method="post">
             {% csrf_token %}
             <li>{{ file.display_name }}</li>
             <input type="text" name="file_id" value="{{ file.id }}" hidden>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+{% load bootstrap4 %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Columns</title>
+</head>
+<body>
+    <form action="/easyml/predict/run-model/" method="post">
+    {% csrf_token %}
+    <input type="text" name="file_id" value="{{ file_id }}" hidden>
+    <table>
+        <tr>
+        {% for header in headers %}
+            <th>{{ header }}</th>
+        {% endfor %}
+        </tr>
+        <tr>
+            {% for header in headers %}
+            <th>
+                <select name="{{ header }}">
+                  <option value="ignore">Ignore</option>
+                  <option value="input">Input</option>
+                  <option value="target">Target</option>
+                </select>
+            </th>
+        {% endfor %}
+        </tr>
+    </table>
+    <hr>
+    <h4>Model: </h4>
+    <select class="align-r" name="model_select">
+        {% for model in valid_models %}
+            <option value="{{ model.id }}">{{ model.display_name }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <hr>
+    <input class="btn btn-success" type="submit" value="Submit">
+    </form>
+<table style="height:100px">
+    <td class="align-bottom"><a href="{% url 'home' %}">Home</a></td>
+</table>
+
+</body>
+</html>

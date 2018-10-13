@@ -11,8 +11,11 @@ urlpatterns = [
     path('manage/data/', views.manage_data, name='manage_data'),
     path('manage/data/delete-file/<int:file_id>', views.delete_file, name='delete_file'),
     path('manage/data/rename-file/', views.rename_file, name='rename_file'),
-    path('train/setup/select-csv/', views.select_csv, name='select_csv'),
-    path('train/setup/select-columns/', views.select_columns, name='select_columns'),
+    path('train/setup/select-csv/<str:purpose>', views.select_csv, name='select_csv'),
+    path('predict/setup/select-csv/<str:purpose>', views.select_csv, name='select_csv'),
+    path('train/setup/select-columns/', views.select_columns_and_alg, name='select_columns_and_alg'),
+    path('predict/setup/select-columns/', views.select_columns_and_model, name='select_columns_and_model'),
     path('train/setup/create-data/', views.create_data, name='create_data'),
     path('predict/select-model/', views.select_model, name='select_model'),
+    path('predict/run-model/', views.run_model, name='run_model'),
 ]

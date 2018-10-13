@@ -14,34 +14,40 @@
 </head>
 <body>
     <h3>Select model</h3>
+    <form action="{% url "select_columns_and_alg" %}" method="post">
+        {% csrf_token %}
+        <select name="model_select">
+            {% for model in valid_models %}
+                <option value="{{ model.id }}">{{ model.display_name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <hr>
+        <h3>Select input file</h3>
 
-    <select>
-        {% for model in valid_models %}
-            <option value="{{ model.id }}">{{ model.display_name }}</option>
-        {% endfor %}
-    </select>
-    <br>
-    <hr>
-    <h3>Select input file</h3>
+        <table>
+            <tr>
+                <select name="file_select">
+                    {% for file in valid_files %}
+                        <option value="{{ file.id }}">{{ file.display_name }}</option>
+                    {% endfor %}
+                </select>
+            </tr>
+            <tr> or </tr>
+            <tr>
+                <form action="{% url "upload_csv" %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+            </tr>
+        </table>
 
-    <table style="width:100%">
-        <tr>
-            <select>
-                {% for file in valid_files %}
-                    <option value="{{ file.id }}">{{ file.display_name }}</option>
-                {% endfor %}
-            </select>
-        </tr>
-        <tr> or </tr>
-        <tr>
-            <form action="{% url "upload_csv" %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary">Upload</button>
-            </form>
-        </tr>
+        <hr>
 
-    </table>
+        <button type="submit" class="btn btn-success">Next Step</button>
+    </form>
 
+<br>
 
 <a href="{% url 'home' %}">Home</a>
 
