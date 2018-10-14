@@ -11,7 +11,7 @@ from pprint import pprint
 
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LogisticRegression, LinearRegression
-from sklearn.neighbors import NearestNeighbors
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
@@ -29,13 +29,13 @@ from .util import get_dataframe
 
 def create_model(algorithm_type_num, file_id):
     file_data = CsvFileData.objects.filter(parent_file_id=file_id)\
-        .exclude(type=COLUMN_TYPE.IGNORE)
+        .exclude(type=COLUMN_TYPE.IGNORE).order_by('column_num')
 
     if file_data.count() == 0:
         print("Error: No data for file {}".format(file_id))
         return
 
-    input_data = file_data.filter(type=COLUMN_TYPE.INPUT)
+    input_data = file_data.filter(type=COLUMN_TYPE.INPUT).order_by('column_num')
     target_data = file_data.filter(type=COLUMN_TYPE.TARGET)
 
     model = None
@@ -104,7 +104,7 @@ def create_linear_regression_model(input_df, target_df):
 def create_logistic_regression_model(input_df, target_df):
     x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
     steps = [('std_scaler', StandardScaler())]
-    steps += [('log_regression', LogisticRegression(penalty='l2'))]
+    steps += [('log_regression', LogisticRegression(penalty='l2', multi_class='auto'))]
     pipe = Pipeline(steps)
 
     parameters = {'log_regression__C': [0.001, 0.01, 0.1, 1, 10, 100]}
@@ -214,10 +214,8 @@ def create_random_forest_regressor(input_df, target_df):
     return rf_clf
 
 def create_k_nearest_neighbors_model(input_df, target_df):
-    neighbors = NearestNeighbors(n_neighbors=2, algorithm='ball_tree').fit(input_df)
-    distances, indices = neighbors.kneighbors(input_df)
-    print("Distances:", distances)
-    print("Indices:", indices)
+    neighbors = KNeighborsClassifier(n_neighbors=3, algorithm='ball_tree')
+    neighbors.fit(input_df, target_df)
 
     return neighbors
 

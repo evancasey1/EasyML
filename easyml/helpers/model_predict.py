@@ -31,13 +31,15 @@ from .util import get_dataframe
 def run_model_predict(file_obj, model_obj):
 
     file_data = CsvFileData.objects.filter(parent_file=file_obj)\
-        .exclude(type=COLUMN_TYPE.IGNORE)
+        .exclude(type=COLUMN_TYPE.IGNORE).order_by('column_num')
+
+    print(file_data.count())
 
     if file_data.count() == 0:
         print("Error: No data for file {}".format(file_obj.display_name))
         return
 
-    input_data = file_data.filter(type=COLUMN_TYPE.INPUT)
+    input_data = file_data.filter(type=COLUMN_TYPE.INPUT).order_by('column_num')
     target_col = file_data.filter(type=COLUMN_TYPE.TARGET).first().column_header
 
     model = model_obj.data
@@ -47,4 +49,6 @@ def run_model_predict(file_obj, model_obj):
 
     concat_df = pd.concat([input_df, results], axis=1)
     csv_data = concat_df.to_csv()
+
+    print(csv_data)
     return csv_data

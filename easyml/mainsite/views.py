@@ -56,6 +56,7 @@ def upload_csv(request, next=None):
 
         csv_data = []
         for row_index, row in file_data.iterrows():
+            print(row_index)
             for i in range(len(columns)):
                 header = columns[i]
                 if pd.isna(row[header]):
@@ -70,6 +71,8 @@ def upload_csv(request, next=None):
             if len(csv_data) > 500:
                 CsvFileData.objects.bulk_create(csv_data)
                 csv_data = []
+
+        CsvFileData.objects.bulk_create(csv_data)
 
     except Exception as e:
         print(traceback.format_exc(e))
