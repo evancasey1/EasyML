@@ -1,3 +1,4 @@
+import csv
 import pandas as pd
 import numpy as np
 import traceback
@@ -11,6 +12,7 @@ from .models import CsvFile, CsvFileData, MLModel
 from django.shortcuts import render
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
+from django.http import StreamingHttpResponse
 from django.urls import reverse_lazy, reverse
 from django.views import generic
 from .forms import CustomUserCreationForm
@@ -298,10 +300,19 @@ def run_model(request):
         messages.error(request, str(e))
         return render(request, 'select_columns_and_model.html', context=error_context)
 
-    print("File: {}, Model: {}".format(file_id, model_id))
     file_obj = CsvFile.objects.get(id=file_id)
     model_obj = MLModel.objects.get(id=model_id)
 
-    run_model_predict(file_obj, model_obj)
+    csv_data = run_model_predict(file_obj, model_obj)
+    raw_rows = csv_data.split('\n')
+    row_data = []
+    for row in raw_rows:
+        row_data.append(row.split(','))
 
-    return render(request, 'home.html', context=context)
+    pseudo_buffer = Echo()
+    writer = csv.writer(pseudo_buffer)
+    response = StreamingHttpResponse((writer.writerow(row) for row in row_data), content_type="text/csv")
+
+    response['Content-Disposition'] = 'attachment; filename="{}-results.csv"'.format(model_obj.display_name)
+
+    return response

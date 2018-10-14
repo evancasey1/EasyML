@@ -8,6 +8,10 @@ from helpers.constants import *
 from django.contrib import messages
 from operator import itemgetter
 
+class Echo:
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
 
 def get_dataframe(qry_data):
     column_headers = qry_data.values_list('column_header', flat=True).distinct()
