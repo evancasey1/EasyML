@@ -4,6 +4,7 @@ import traceback
 
 from helpers.constants import COLUMN_TYPE, algorithm_name_map
 from helpers.model_builder import create_model
+from helpers.model_predict import run_model_predict
 from helpers.util import *
 
 from .models import CsvFile, CsvFileData, MLModel
@@ -298,5 +299,9 @@ def run_model(request):
         return render(request, 'select_columns_and_model.html', context=error_context)
 
     print("File: {}, Model: {}".format(file_id, model_id))
+    file_obj = CsvFile.objects.get(id=file_id)
+    model_obj = MLModel.objects.get(id=model_id)
+
+    run_model_predict(file_obj, model_obj)
 
     return render(request, 'home.html', context=context)

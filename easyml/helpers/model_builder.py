@@ -4,6 +4,7 @@ import numpy as np
 import traceback
 import msgpack
 import math
+import base64
 import pickle
 
 from pprint import pprint
@@ -26,7 +27,7 @@ from mainsite.models import CsvFile, CsvFileData, MLModel
 from .util import get_dataframe
 
 
-def create_model(algorithm_type, file_id):
+def create_model(algorithm_type_num, file_id):
     file_data = CsvFileData.objects.filter(parent_file_id=file_id)\
         .exclude(type=COLUMN_TYPE.IGNORE)
 
@@ -38,47 +39,45 @@ def create_model(algorithm_type, file_id):
     target_data = file_data.filter(type=COLUMN_TYPE.TARGET)
 
     model = None
-    alg_type = algorithm_name_map[str(algorithm_type)]
+    alg_type = algorithm_name_map[str(algorithm_type_num)]
 
     input_df = get_dataframe(input_data)
     target_df = get_dataframe(target_data)
 
-    if algorithm_type == ALGORITHM.LINEAR_REGRESSION:
+    if algorithm_type_num == ALGORITHM.LINEAR_REGRESSION:
         model = create_linear_regression_model(input_df, target_df)
 
-    elif algorithm_type == ALGORITHM.K_NEAREST_NEIGHBORS:
+    elif algorithm_type_num == ALGORITHM.K_NEAREST_NEIGHBORS:
         model = create_k_nearest_neighbors_model(input_df, target_df)
 
-    elif algorithm_type == ALGORITHM.LOGISTIC_REGRESSION:
+    elif algorithm_type_num == ALGORITHM.LOGISTIC_REGRESSION:
         model = create_logistic_regression_model(input_df, target_df)
 
-    elif algorithm_type == ALGORITHM.NEAREST_CENTROID:
+    elif algorithm_type_num == ALGORITHM.NEAREST_CENTROID:
         model = create_nearest_centroid(input_df, target_df)
 
-    elif algorithm_type == ALGORITHM.LINEAR_DISCRIMINANT_ANALYSIS:
+    elif algorithm_type_num == ALGORITHM.LINEAR_DISCRIMINANT_ANALYSIS:
         model = create_linear_discriminant_analysis(input_df, target_df)
 
-    elif algorithm_type == ALGORITHM.DECISION_TREE:
+    elif algorithm_type_num == ALGORITHM.DECISION_TREE:
         model = create_decision_tree(input_df, target_df)
 
-    elif algorithm_type == ALGORITHM.GAUSSIAN_NAIVE_BAYES:
+    elif algorithm_type_num == ALGORITHM.GAUSSIAN_NAIVE_BAYES:
         model = create_gaussian_naive_bayes(input_df, target_df)
 
-    elif algorithm_type == ALGORITHM.RANDOM_FOREST_CLASSIFIER:
+    elif algorithm_type_num == ALGORITHM.RANDOM_FOREST_CLASSIFIER:
         model = create_random_forest_classifier(input_df, target_df)
 
-    elif algorithm_type == ALGORITHM.RANDOM_FOREST_REGRESSOR:
+    elif algorithm_type_num == ALGORITHM.RANDOM_FOREST_REGRESSOR:
         model = create_random_forest_regressor(input_df, target_df)
 
-    elif algorithm_type == ALGORITHM.SUPPORT_VECTOR_MACHINE:
+    elif algorithm_type_num == ALGORITHM.SUPPORT_VECTOR_MACHINE:
         model = create_support_vector_machine(input_df, target_df)
 
     if model:
-        save_model(model, alg_type, file_id)
+        save_model(model, alg_type, algorithm_type_num, file_id)
 
-def save_model(model, alg_type, file_id):
-    serialized_data = pickle.dumps(model)
-
+def save_model(model, alg_type, algorithm_type_num, file_id):
     parent_file = CsvFile.objects.get(id=file_id)
     display_name = "{}: {}".format(parent_file.display_name, alg_type)
 
@@ -88,7 +87,8 @@ def save_model(model, alg_type, file_id):
 
     model_obj = MLModel()
     model_obj.type = alg_type
-    model_obj.data = serialized_data
+    model_obj.type_num = algorithm_type_num
+    model_obj.data = model
     model_obj.name = parent_file.display_name
     model_obj.display_name = display_name
     model_obj.parent_file = CsvFile.objects.get(id=file_id)

@@ -3,6 +3,7 @@ import datetime
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from picklefield.fields import PickledObjectField
 
 class CustomUser(AbstractUser):
     # add additional fields in here
@@ -37,8 +38,9 @@ class CsvFileData(models.Model):
     type = models.IntegerField(null=True, blank=True)
 
 class MLModel(models.Model):
-    type = models.CharField(max_length=255)
-    data = models.TextField()
+    type = models.CharField(max_length=255, blank=False, null=False)
+    type_num = models.IntegerField(blank=False, null=False)
+    data = PickledObjectField()
     created_at = models.DateTimeField(auto_now_add=True)
     parent_file = models.ForeignKey(
         'CsvFile',

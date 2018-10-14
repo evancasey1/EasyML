@@ -14,15 +14,20 @@
 </head>
 <body>
 <ul>
-    {% for model in valid_models %}
-        <form action="rename-model/" method="post">
-        {% csrf_token %}
-            <li><input style="width:90%" type="text" name="display_name" value="{{ model.display_name }}"></li>
-            <input type="text" name="model_id" value="{{ model.id }}" hidden>
-            <a class="btn btn-danger" href="{% url 'delete_model' model.id %}">Delete</a> <input class="btn btn-primary" type="submit" value="Rename">
-        </form>
-        <hr>
-    {% endfor %}
+    {% if valid_models %}
+        {% for model in valid_models %}
+            <form action="rename-model/" method="post">
+            {% csrf_token %}
+                <li><input style="width:90%" type="text" name="display_name" value="{{ model.display_name }}"></li>
+                <input type="text" name="model_id" value="{{ model.id }}" hidden>
+                <a class="btn btn-danger" href="{% url 'delete_model' model.id %}">Delete</a> <input class="btn btn-primary" type="submit" value="Rename">
+            </form>
+            <hr>
+        {% endfor %}
+    {% else %}
+        You have not trained any models yet.
+
+    {% endif %}
 </ul>
 
 <a href="{% url 'home' %}">Home</a>

@@ -28,3 +28,4 @@ algorithm_name_map = {
     str(ALGORITHM.NEAREST_CENTROID): 'Nearest Centroid',
     str(ALGORITHM.RANDOM_FOREST_REGRESSOR): 'Random Forest Regressor',
 }
+
