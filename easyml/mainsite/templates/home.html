@@ -22,7 +22,7 @@
   <p><a href="{% url 'logout' %}">Log out</a></p>
   <body>
       <div class="container-fluid">
-      <div class="col-sm-2">
+
       {% block sidebar %}
         <ul class="sidebar-nav">
             <li class="sidebar-row"><a href="{% url 'home' %}">Home</a></li>
@@ -33,7 +33,7 @@
             <li class="sidebar-row"><a href="{% url 'manage_data' %}">Manage Data</a></li>
         </ul>
       {% endblock %}
-    </div>
+
   </div>
   </body>
 {% else %}
