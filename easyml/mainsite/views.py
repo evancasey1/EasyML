@@ -1,7 +1,16 @@
 import csv
+import base64
 import pandas as pd
 import numpy as np
 import traceback
+import io
+import matplotlib
+import matplotlib.pyplot as plt
+import PIL, PIL.Image
+
+from matplotlib import pylab
+from pylab import *
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from helpers.constants import COLUMN_TYPE, algorithm_name_map
 from helpers.model_builder import create_model
@@ -56,10 +65,9 @@ def upload_csv(request, next=None):
 
         csv_data = []
         for row_index, row in file_data.iterrows():
-            print(row_index)
             for i in range(len(columns)):
                 header = columns[i]
-                if pd.isna(row[header]):
+                if pd.isna(row[header]) or 'unnamed' in header.lower():
                     continue
                 data_obj = CsvFileData(parent_file=csv_obj)
                 data_obj.data = row[header]
@@ -206,6 +214,20 @@ def select_columns_and_alg(request):
     context['headers'] = headers
     context['file_id'] = file_id
     context['algorithms'] = get_alg_lst()
+
+    file_data = CsvFileData.objects.filter(parent_file_id=file_id).order_by('column_num')
+
+    f = matplotlib.figure.Figure()
+    buf = io.BytesIO()
+
+    data_df = get_dataframe(file_data)
+    pd.plotting.scatter_matrix(data_df)
+    plt.gcf().subplots_adjust(bottom=0.15)
+
+    plt.savefig(buf, format='png')
+    plt.close(f)
+
+    context['graphic'] = base64.b64encode(buf.getvalue()).decode('ascii')
 
     return render(request, 'select_columns_and_alg.html', context=context)
 
