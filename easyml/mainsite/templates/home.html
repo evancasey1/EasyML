@@ -27,12 +27,12 @@
 
       {% block sidebar %}
         <ul class="sidebar-nav">
-            <li class="sidebar-row"><a href="{% url 'home' %}" class="fa fa-home">Home</a></li>
-            <li class="sidebar-row"><a href="/easyml/train/setup/select-csv/train">Train New Model</a></li>
-            <li class="sidebar-row"><a href="/easyml/predict/setup/select-csv/predict">Use Model</a></li>
-            <li class="sidebar-row"><a href="{% url 'upload_csv' %}">Upload Data</a></li>
-            <li class="sidebar-row"><a href="{% url 'manage_models' %}">Manage Models</a></li>
-            <li class="sidebar-row "><a href="{% url 'manage_data' %}">Manage Data</a></li>
+            <li class="sidebar-row"><a href="{% url 'home' %}" class="fa fa-home">  Home</a></li>
+            <li class="sidebar-row"><a href="/easyml/train/setup/select-csv/train" class="fa fa-line-chart">  Train New Model</a></li>
+            <li class="sidebar-row"><a href="/easyml/predict/setup/select-csv/predict" class="fa fa-bar-chart">  Use Model</a></li>
+            <li class="sidebar-row"><a href="{% url 'upload_csv' %}" class="fa fa-upload">  Upload Data</a></li>
+            <li class="sidebar-row"><a href="{% url 'manage_models' %}" class="fa fa-pencil">  Manage Models</a></li>
+            <li class="sidebar-row "><a href="{% url 'manage_data' %}" class="fa fa-database">  Manage Data</a></li>
         </ul>
       {% endblock %}
 
