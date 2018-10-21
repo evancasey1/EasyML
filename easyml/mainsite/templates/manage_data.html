@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-{% load bootstrap4 %}
+{% extends 'base.html' %}
 
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
-<link rel="stylesheet" href="/static/css/font-awesome.min.css">
-
+{% block content %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -29,4 +22,4 @@
 <a href="{% url 'home' %}" class="fa fa-home">Home</a>
 
 </body>
-</html>
+{% endblock %}

@@ -1,12 +1,6 @@
-{% load bootstrap4 %}
+{% extends 'base.html' %}
 
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
-<link rel="stylesheet" href="/static/css/font-awesome.min.css">
-
+{% block content %}
 <form action="{% url 'upload_csv' %}" method="POST" enctype="multipart/form-data" class="form-horizontal">
     {% csrf_token %}
     <div class="form-group">
@@ -23,3 +17,4 @@
 </form>
 
 <a href="{% url 'home' %}" class="fa fa-home">Home</a>
+{% endblock %}
