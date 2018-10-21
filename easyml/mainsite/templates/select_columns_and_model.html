@@ -6,6 +6,7 @@
 
 {# Display django.contrib.messages as Bootstrap alerts #}
 {% bootstrap_messages %}
+<link rel="stylesheet" href="/static/css/font-awesome.min.css">
 
 <html lang="en">
 <head>
@@ -46,7 +47,7 @@
     <input class="btn btn-success" type="submit" value="Submit">
     </form>
 <table style="height:100px">
-    <td class="align-bottom"><a href="{% url 'home' %}">Home</a></td>
+    <td class="align-bottom"><a href="{% url 'home' %}" class="fa fa-home">Home</a></td>
 </table>
 
 </body>

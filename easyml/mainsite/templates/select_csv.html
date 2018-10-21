@@ -6,6 +6,7 @@
 
 {# Display django.contrib.messages as Bootstrap alerts #}
 {% bootstrap_messages %}
+<link rel="stylesheet" href="/static/css/font-awesome.min.css">
 
 <html lang="en">
 <head>
@@ -27,7 +28,7 @@
     {% endfor %}
 </ul>
 
-<a href="{% url 'home' %}">Home</a>
+<a href="{% url 'home' %}" class="fa fa-home">Home</a>
 
 </body>
 </html>
