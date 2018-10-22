@@ -15,3 +15,7 @@ li.sidebar-row a {
     margin-right: auto;
     width: 50%;
 }
+
+body {
+    background: url('/static/img/cream_dust.png') repeat 0 0;
+}

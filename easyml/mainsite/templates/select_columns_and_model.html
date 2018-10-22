@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-{% load bootstrap4 %}
+{% extends 'base.html' %}
 
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
-
+{% block content %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -46,8 +40,8 @@
     <input class="btn btn-success" type="submit" value="Submit">
     </form>
 <table style="height:100px">
-    <td class="align-bottom"><a href="{% url 'home' %}">Home</a></td>
+    <td class="align-bottom"><a href="{% url 'home' %}" class="fa fa-home">Home</a></td>
 </table>
 
 </body>
-</html>
+{% endblock %}

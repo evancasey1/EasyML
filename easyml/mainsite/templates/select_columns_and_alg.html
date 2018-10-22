@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-{% load bootstrap4 %}
-{% load static %}
+{% extends 'base.html' %}
 
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
-
-<link rel="stylesheet" href="{% static "css/styles.css" %}">
+{% block content %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -50,8 +42,8 @@
     <!--<img src="/easyml/data/render-plot/">!-->
     <img src="data:image/png;base64,{{ graphic }}" class="img-center"/>
 <table style="height:100px">
-    <td class="align-bottom"><a href="{% url 'home' %}">Home</a></td>
+    <td class="align-bottom"><a href="{% url 'home' %}" class="fa fa-home">Home</a></td>
 </table>
 
 </body>
-</html>
+{% endblock %}
