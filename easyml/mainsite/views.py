@@ -210,7 +210,11 @@ def select_columns_and_alg(request):
     if request.user != CsvFile.objects.get(id=file_id).file_owner:
         return HttpResponseRedirect('/easyml/train/setup/select-csv')
 
-    headers = CsvFileData.objects.filter(parent_file_id=file_id).values_list('column_header', flat=True).distinct()
+    headers = CsvFileData.objects.filter(parent_file_id=file_id)\
+        .order_by('column_num')\
+        .values_list('column_header', flat=True)\
+        .distinct()
+
     context['headers'] = headers
     context['file_id'] = file_id
     context['algorithms'] = get_alg_lst()
@@ -240,7 +244,11 @@ def select_columns_and_model(request):
     if request.user != CsvFile.objects.get(id=file_id).file_owner:
         return HttpResponseRedirect('/easyml/train/setup/select-csv')
 
-    headers = CsvFileData.objects.filter(parent_file_id=file_id).values_list('column_header', flat=True).distinct()
+    headers = CsvFileData.objects.filter(parent_file_id=file_id)\
+        .order_by('column_num')\
+        .values_list('column_header', flat=True)\
+        .distinct()
+
     context['headers'] = headers
     context['file_id'] = file_id
 

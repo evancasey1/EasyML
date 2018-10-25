@@ -8,11 +8,11 @@
 </head>
 <body>
 <div class="main">
-<h2>Select Columns</h2>
+<p class="page-header">Select Columns</p>
     <form action="/easyml/predict/run-model/" method="post">
     {% csrf_token %}
     <input type="text" name="file_id" value="{{ file_id }}" hidden>
-    <table>
+    <table class="select-table table-striped center">
         <tr>
         {% for header in headers %}
             <th>{{ header }}</th>
@@ -21,7 +21,7 @@
         <tr>
             {% for header in headers %}
             <th>
-                <select name="{{ header }}">
+                <select class="custom-select" name="{{ header }}">
                   <option value="ignore">Ignore</option>
                   <option value="input">Input</option>
                   <option value="target">Target</option>
@@ -32,7 +32,7 @@
     </table>
     <hr>
     <h4>Model: </h4>
-    <select class="align-r" name="model_select">
+    <select class="align-r custom-select" name="model_select">
         {% for model in valid_models %}
             <option value="{{ model.id }}">{{ model.display_name }}</option>
         {% endfor %}
