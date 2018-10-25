@@ -346,6 +346,7 @@ def run_model(request):
     writer = csv.writer(pseudo_buffer)
     response = StreamingHttpResponse((writer.writerow(row) for row in row_data), content_type="text/csv")
 
-    response['Content-Disposition'] = 'attachment; filename="{}-results.csv"'.format(model_obj.display_name)
+    response['Content-Disposition'] = 'attachment; filename="{}-results.csv"'\
+        .format(model_obj.display_name.replace(" ", ""))
 
     return response
