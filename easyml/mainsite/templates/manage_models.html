@@ -8,23 +8,26 @@
 </head>
 <body>
 <div class="main">
-<h2>Manage Models</h2>
-<ul>
-    {% if valid_models %}
-        {% for model in valid_models %}
-            <form action="rename-model/" method="post">
-            {% csrf_token %}
-                <li><input style="width:90%" type="text" name="display_name" value="{{ model.display_name }}"></li>
-                <input type="text" name="model_id" value="{{ model.id }}" hidden>
-                <a class="btn btn-danger" href="{% url 'delete_model' model.id %}">Delete</a> <input class="btn btn-primary" type="submit" value="Rename">
-            </form>
-            <hr>
-        {% endfor %}
-    {% else %}
-        You have not trained any models yet.
-
-    {% endif %}
-</ul>
+<p class="page-header">Manage Models</p>
+    <ul>
+        {% if valid_models %}
+            <table class="select-table table-striped center">
+                {% for model in valid_models %}
+                    <tr>
+                        <form action="rename-model/" method="post">
+                        {% csrf_token %}
+                            <input type="text" name="model_id" value="{{ model.id }}" hidden>
+                            <td><input style="width:90%" type="text" name="display_name" value="{{ model.display_name }}"></td>
+                            <td><a class="btn btn-danger" href="{% url 'delete_model' model.id %}">Delete</a></td>
+                            <td><input class="btn btn-primary" type="submit" value="Rename"></td>
+                        </form>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            You have not trained any models yet.
+        {% endif %}
+    </ul>
 </div>
 </body>
 {% endblock %}

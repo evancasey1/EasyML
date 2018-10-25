@@ -8,18 +8,22 @@
 </head>
 <body>
 <div class="main">
-<h2>Manage Data</h2>
-<ul>
-    {% for file in valid_files %}
-        <form action="rename-file/" method="post">
-        {% csrf_token %}
-            <li><input type="text" name="display_name" value="{{ file.display_name }}"></li>
-            <input type="text" name="file_id" value="{{ file.id }}" hidden>
-            <a class="btn btn-danger" href="{% url 'delete_file' file.id %}">Delete</a> <input class="btn btn-primary" type="submit" value="Rename">
-        </form>
-        <hr>
-    {% endfor %}
-</ul>
+    <p class="page-header">Manage Data</p>
+    <ul>
+        <table class="select-table table-striped center">
+            {% for file in valid_files %}
+                <tr>
+                    <form action="rename-file/" method="post">
+                    {% csrf_token %}
+                        <input type="text" name="file_id" value="{{ file.id }}" hidden>
+                        <td><input type="text" name="display_name" value="{{ file.display_name }}"></td>
+                        <td><a class="btn btn-danger" href="{% url 'delete_file' file.id %}">Delete</a></td>
+                        <td><input class="btn btn-primary" type="submit" value="Rename"></td>
+                    </form>
+                </tr>
+            {% endfor %}
+        </table>
+    </ul>
 </div>
 </body>
 {% endblock %}

@@ -58,6 +58,52 @@ body {
     .sidenav a {font-size: 18px;}
 }
 
-th, td {
+.sidenav th, td {
     border-bottom: 1px solid #ddd;
+}
+
+.select-table {
+    width: 50%;
+    text-align: center;
+}
+
+table.center {
+    width:70%;
+    margin-left:15%;
+    margin-right:15%;
+}
+
+div.center {
+    width:100%;
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+.select-table th, td {
+    border-bottom: 3px solid #ddd;
+}
+
+.select-table td {
+    font-size: 22px;
+}
+
+td.sub-btn-row {
+    text-align: center;
+}
+
+tr.table-head {
+    background: lightgrey;
+}
+
+.page-header {
+    font-size: 30px;
+    text-align: center;
+}
+
+.alert-success {
+    margin-left: 200px;
+}
+
+.alert-danger {
+    margin-left: 200px;
 }

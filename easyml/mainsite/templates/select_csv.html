@@ -12,15 +12,20 @@
 <p class="page-header">{{ title }}{{ action }}</p>
 <br>
 <ul>
+    <table class="select-table center table-striped">
     {% for file in valid_files %}
-        <form action="{% url form_action %}" method="post">
-            {% csrf_token %}
-            <li>{{ file.display_name }}</li>
-            <input type="text" name="file_id" value="{{ file.id }}" hidden>
-            <input class="btn btn-primary" type="submit" value="Select">
-        </form>
-        <hr>
+        <tr>
+            <td class="fname-field">{{ file.display_name }}</td>
+            <td>
+                <form action="{% url form_action %}" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="file_id" value="{{ file.id }}" hidden>
+                    <input class="btn btn-primary" type="submit" value="Select">
+                </form>
+            </td>
+        </tr>
     {% endfor %}
+    <table>
 </ul>
 
 </div>
