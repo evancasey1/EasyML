@@ -7,6 +7,7 @@
     <title>Select Model</title>
 </head>
 <body>
+<div class="main">
     <h3>Select model</h3>
     <form action="{% url "select_columns_and_alg" %}" method="post">
         {% csrf_token %}
@@ -40,7 +41,7 @@
 
         <button type="submit" class="btn btn-success">Next Step</button>
     </form>
-
+</div>
 <br>
 
 <a href="{% url 'home' %}" class="fa fa-home">Home</a>

@@ -4,9 +4,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Manage Data</title>
+    <title>Manage Models</title>
 </head>
 <body>
+<div class="main">
+<h2>Manage Models</h2>
 <ul>
     {% if valid_models %}
         {% for model in valid_models %}
@@ -23,6 +25,7 @@
 
     {% endif %}
 </ul>
+</div>
 
 <a href="{% url 'home' %}" class="fa fa-home">Home</a>
 

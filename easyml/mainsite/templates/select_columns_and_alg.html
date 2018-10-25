@@ -7,6 +7,8 @@
     <title>Select Columns</title>
 </head>
 <body>
+<div class="main">
+<h2>Select Columns</h2>
     <form action="/easyml/train/setup/create-data/" method="post">
     {% csrf_token %}
     <input type="text" name="file_id" value="{{ file_id }}" hidden>
@@ -44,6 +46,6 @@
 <table style="height:100px">
     <td class="align-bottom"><a href="{% url 'home' %}" class="fa fa-home">Home</a></td>
 </table>
-
+</div>
 </body>
 {% endblock %}
