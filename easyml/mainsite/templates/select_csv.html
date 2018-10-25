@@ -7,9 +7,9 @@
     <meta charset="UTF-8">
     <title>Select File</title>
 </head>
-<div class="main">
 <body>
-<h3>{{ title }}{{ action }}</h3>
+<div class="main">
+<p class="page-header">{{ title }}{{ action }}</p>
 <br>
 <ul>
     {% for file in valid_files %}
@@ -22,9 +22,7 @@
         <hr>
     {% endfor %}
 </ul>
+
 </div>
-
-<a href="{% url 'home' %}" class="fa fa-home">Home</a>
-
 </body>
 {% endblock %}
