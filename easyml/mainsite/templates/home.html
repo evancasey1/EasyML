@@ -1,13 +1,5 @@
 {% extends 'base.html' %}
 
-{% load bootstrap4 %}
-
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
-
 {% block title %}Home{% endblock %}
 
 {% block content %}
@@ -15,30 +7,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Add additional CSS in static file -->
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-  Hi {{ user.username }}!
-  <p><a href="{% url 'logout' %}">Log out</a></p>
   <body>
-      <div class="container-fluid">
+    <div class="main">
+        <h2>Welcome to EasyML</h2>
 
-      {% block sidebar %}
-        <ul class="sidebar-nav">
-            <li class="sidebar-row"><a href="{% url 'home' %}" class="fa fa-home">  Home</a></li>
-            <li class="sidebar-row"><a href="/easyml/train/setup/select-csv/train" class="fa fa-line-chart">  Train New Model</a></li>
-            <li class="sidebar-row"><a href="/easyml/predict/setup/select-csv/predict" class="fa fa-bar-chart">  Use Model</a></li>
-            <li class="sidebar-row"><a href="{% url 'upload_csv' %}" class="fa fa-upload">  Upload Data</a></li>
-            <li class="sidebar-row"><a href="{% url 'manage_models' %}" class="fa fa-pencil">  Manage Models</a></li>
-            <li class="sidebar-row "><a href="{% url 'manage_data' %}" class="fa fa-database">  Manage Data</a></li>
-        </ul>
-      {% endblock %}
-
-  </div>
+        <p>Get started by uploading data and training a model, then simply use that model on any dataset of your choice!</p>
+    </div>
   </body>
 {% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">Sign in</a> |
-  <a href="{% url 'signup' %}">Sign up</a>
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">Sign in</a> |
+    <a href="{% url 'signup' %}">Sign up</a>
 {% endif %}
 {% endblock %}

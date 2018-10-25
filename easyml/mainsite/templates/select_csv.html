@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <title>Select File</title>
 </head>
+<div class="main">
 <body>
 <h3>{{ title }}{{ action }}</h3>
 <br>
@@ -16,11 +17,12 @@
             {% csrf_token %}
             <li>{{ file.display_name }}</li>
             <input type="text" name="file_id" value="{{ file.id }}" hidden>
-            <input class="btn btn-success" type="submit" value="Select">
+            <input class="btn btn-primary" type="submit" value="Select">
         </form>
         <hr>
     {% endfor %}
 </ul>
+</div>
 
 <a href="{% url 'home' %}" class="fa fa-home">Home</a>
 
