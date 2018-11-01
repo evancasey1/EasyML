@@ -96,8 +96,8 @@ def save_model(model, alg_type, algorithm_type_num, file_id, parameters):
 
 
 def create_linear_regression_model(input_df, target_df, parameters):
-    fit_intercept = bool(parameters.get('linreg_fit_intercept', None))
-    normalize = bool(parameters.get('linreg_normalize', None))
+    fit_intercept = bool(parameters.get('linreg_fit_intercept', False))
+    normalize = bool(parameters.get('linreg_normalize', False))
 
     lin_reg = LinearRegression(fit_intercept=fit_intercept, normalize=normalize)
     lin_reg = lin_reg.fit(input_df, target_df)
@@ -108,7 +108,7 @@ def create_linear_regression_model(input_df, target_df, parameters):
 def create_logistic_regression_model(input_df, target_df, parameters):
     logreg_penalty = parameters.get('logreg_penalty', 'l2')
     logreg_c_select = parameters.get('logreg_C_select', None)
-    logreg_fit_intercept = bool(parameters.get('logreg_fit_intercept', None))
+    logreg_fit_intercept = bool(parameters.get('logreg_fit_intercept', False))
 
     if not logreg_c_select or logreg_c_select == 'custom':
         logreg_c = int(parameters.get('logreg_C', 1.0))
@@ -149,13 +149,13 @@ def create_decision_tree_regressor(input_df, target_df, parameters):
         best_depth = None
 
     elif max_depth_choice == 'custom':
-        best_depth = parameters.get('dtr_custom_depth', 5)
+        best_depth = parameters.get('dtr_custom_depth', None)
 
     else:
         x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
         r2_lst = []
-        depth_iter = 10
-        depth_start = 2
+        depth_iter = 5
+        depth_start = 10
 
         depth_lst = []
         for i in range(depth_iter):
@@ -171,7 +171,7 @@ def create_decision_tree_regressor(input_df, target_df, parameters):
         best_depth = depth_lst[depth_index]
 
     dt_regr_final = DecisionTreeRegressor(max_depth=best_depth,
-                                          presort=presort, 
+                                          presort=presort,
                                           criterion=criterion).fit(input_df, target_df)
     return dt_regr_final
 
@@ -184,52 +184,82 @@ def create_gaussian_naive_bayes(input_df, target_df, parameters):
 
 
 def create_random_forest_classifier(input_df, target_df, parameters):
-    x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
+    criterion = parameters.get('rfc_criterion', 'gini')
+    n_estimators = parameters.get('rfc_n_estimators', 100)
+    depth_select = parameters.get('rfc_max_depth', None)
 
-    n_est = 100
-    r2_lst = []
-    depth_iter = 10
-    depth_start = 2
+    if depth_select == 'none':
+        best_depth = None
 
-    depth_lst = []
-    for i in range(depth_iter):
-        depth_lst.append(depth_start**i)
+    elif depth_select == 'custom':
+        best_depth = parameters.get('rfc_custom_depth', None)
 
-    # Select model with best r^2 and least depth
-    for depth in depth_lst:
-        rf_clf = RandomForestClassifier(n_estimators=n_est, max_depth=depth, oob_score=True)
-        rf_clf.fit(x_train, y_train.values.ravel())
-        r2_lst.append(rf_clf.oob_score_)
+    else:
+        x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
 
-    depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
-    best_depth = depth_lst[depth_index]
+        r2_lst = []
+        depth_iter = 5
+        depth_start = 10
 
-    rf_clf = RandomForestClassifier(n_estimators=n_est, max_depth=best_depth).fit(input_df, target_df.values.ravel())
+        depth_lst = []
+        for i in range(depth_iter):
+            depth_lst.append(depth_start**i)
+
+        # Select model with best r^2 and least depth
+        for depth in depth_lst:
+            rf_clf = RandomForestClassifier(n_estimators=n_estimators,
+                                            max_depth=depth,
+                                            criterion=criterion,
+                                            oob_score=True)
+            rf_clf.fit(x_train, y_train.values.ravel())
+            r2_lst.append(rf_clf.oob_score_)
+
+        depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
+        best_depth = depth_lst[depth_index]
+
+    rf_clf = RandomForestClassifier(n_estimators=n_estimators,
+                                    max_depth=best_depth,
+                                    criterion=criterion).fit(input_df, target_df)
     return rf_clf
 
 
 def create_random_forest_regressor(input_df, target_df, parameters):
-    x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
+    criterion = parameters.get('rfc_criterion', 'mse')
+    n_estimators = parameters.get('rfc_n_estimators', 100)
+    depth_select = parameters.get('rfc_max_depth', None)
 
-    n_est = 100
-    r2_lst = []
-    depth_iter = 10
-    depth_start = 2
+    if depth_select == 'none':
+        best_depth = None
 
-    depth_lst = []
-    for i in range(depth_iter):
-        depth_lst.append(depth_start**i)
+    elif depth_select == 'custom':
+        best_depth = parameters.get('rfc_custom_depth', None)
 
-    # Select model with best r^2 and least depth
-    for depth in depth_lst:
-        rf_clf = RandomForestRegressor(n_estimators=n_est, max_depth=depth, oob_score=True)
-        rf_clf.fit(x_train, y_train.values.ravel())
-        r2_lst.append(rf_clf.oob_score_)
+    else:
+        x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
 
-    depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
-    best_depth = depth_lst[depth_index]
+        r2_lst = []
+        depth_iter = 5
+        depth_start = 10
 
-    rf_clf = RandomForestRegressor(n_estimators=n_est, max_depth=best_depth).fit(input_df, target_df.values.ravel())
+        depth_lst = []
+        for i in range(depth_iter):
+            depth_lst.append(depth_start**i)
+
+        # Select model with best r^2 and least depth
+        for depth in depth_lst:
+            rf_clf = RandomForestRegressor(n_estimators=n_estimators,
+                                           max_depth=depth,
+                                           criterion=criterion,
+                                           oob_score=True)
+            rf_clf.fit(x_train, y_train)
+            r2_lst.append(rf_clf.oob_score_)
+
+        depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
+        best_depth = depth_lst[depth_index]
+
+    rf_clf = RandomForestRegressor(n_estimators=n_estimators,
+                                   max_depth=best_depth,
+                                   criterion=criterion).fit(input_df, target_df)
     return rf_clf
 
 
