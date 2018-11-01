@@ -12,7 +12,7 @@ from pprint import pprint
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LogisticRegression, LinearRegression
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
@@ -221,13 +221,13 @@ def create_random_forest_regressor(input_df, target_df):
     return rf_clf
 
 def create_k_nearest_neighbors_classifier(input_df, target_df):
-    neighbors = KNeighborsClassifier(n_neighbors=3, algorithm='ball_tree')
+    neighbors = KNeighborsClassifier(n_neighbors=5, algorithm='ball_tree')
     neighbors.fit(input_df, target_df)
 
     return neighbors
 
 def create_k_nearest_neighbors_regressor(input_df, target_df):
-    neighbors = KNeighborsClassifier(n_neighbors=3, algorithm='ball_tree')
+    neighbors = KNeighborsRegressor(n_neighbors=5, algorithm='ball_tree')
     neighbors.fit(input_df, target_df)
 
     return neighbors
