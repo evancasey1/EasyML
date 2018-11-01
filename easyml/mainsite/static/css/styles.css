@@ -142,6 +142,17 @@ tr.table-head {
   width: 100%;
 }
 
+.base-select {
+  position: relative;
+  font-family: Arial;
+  background-color: lightgrey;
+}
+
+.base-num-select {
+    position: relative;
+    width: 10%;
+}
+
 .switch {
   position: relative;
   display: inline-block;

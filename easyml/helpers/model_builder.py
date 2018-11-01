@@ -52,7 +52,7 @@ def create_model(algorithm_type_num, file_id, parameters):
     elif algorithm_type_num == ALGORITHM.LINEAR_DISCRIMINANT_ANALYSIS:
         model = create_linear_discriminant_analysis(input_df, target_df, parameters)
 
-    elif algorithm_type_num == ALGORITHM.DECISION_TREE:
+    elif algorithm_type_num == ALGORITHM.DECISION_TREE_REGRESSOR:
         model = create_decision_tree(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.GAUSSIAN_NAIVE_BAYES:
@@ -94,8 +94,8 @@ def save_model(model, alg_type, algorithm_type_num, file_id, parameters):
 
 
 def create_linear_regression_model(input_df, target_df, parameters):
-    fit_intercept = bool(parameters.get('lr_fit_intercept', None))
-    normalize = bool(parameters.get('lr_normalize', None))
+    fit_intercept = bool(parameters.get('linreg_fit_intercept', None))
+    normalize = bool(parameters.get('linreg_normalize', None))
 
     lin_reg = LinearRegression(fit_intercept=fit_intercept, normalize=normalize)
     lin_reg = lin_reg.fit(input_df, target_df)
@@ -125,13 +125,12 @@ def create_linear_discriminant_analysis(input_df, target_df, parameters):
 def create_decision_tree(input_df, target_df, parameters):
     x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
     r2_lst = []
-    depth_mul = 10
     depth_iter = 10
-    depth_start = 1.0 / (depth_mul ** (depth_iter / 2))
+    depth_start = 2
 
     depth_lst = []
     for i in range(depth_iter):
-        depth_lst.append(depth_start * (depth_mul ** i))
+        depth_lst.append(depth_start**i)
 
     # Select model with best r^2 and least depth
     for depth in depth_lst:
@@ -158,13 +157,12 @@ def create_random_forest_classifier(input_df, target_df, parameters):
 
     n_est = 100
     r2_lst = []
-    depth_mul = 10
     depth_iter = 10
-    depth_start = 1.0/(depth_mul**(depth_iter/2))
+    depth_start = 2
 
     depth_lst = []
     for i in range(depth_iter):
-        depth_lst.append(depth_start * (depth_mul**i))
+        depth_lst.append(depth_start**i)
 
     # Select model with best r^2 and least depth
     for depth in depth_lst:

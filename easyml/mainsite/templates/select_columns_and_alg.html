@@ -23,7 +23,7 @@
             <th style="padding: 15px">
                 <select class="custom-select-type" name="{{ header }}">
                   <option value="ignore">Ignore</option>
-                  <option value="input" selected>Input</option>
+                  <option value="input" selected="selected">Input</option>
                   <option value="target">Target</option>
                 </select>
             </th>
@@ -48,15 +48,79 @@
     <hr>
     <div style="clear: both"></div>
     <div id="hyperparameters" style="display: block">
-        <h4>Tune Parameters</h4>
-        <table class="hp-table" id="linear_regression">
+        <h4 id="tune_header">Tune Parameters</h4>
+        <!-- LINEAR REGRESSION !-->
+        <table class="hp-table" id="linear_regression" style="display: block">
             <tr>
                 <td>Fit Intercept</td>
-                <td style="text-align: right"><label class="switch"><input type="checkbox" name="lr_fit_intercept" checked><span class="slider round"></span></label></td>
+                <td style="text-align: right"><label class="switch"><input type="checkbox" name="linreg_fit_intercept" checked><span class="slider round"></span></label></td>
             </tr>
             <tr>
                 <td>Normalize</td>
-                <td style="text-align: right"><label class="switch"><input type="checkbox" name="lr_normalize"><span class="slider round"></span></label></td>
+                <td style="text-align: right"><label class="switch"><input type="checkbox" name="linreg_normalize"><span class="slider round"></span></label></td>
+            </tr>
+        </table>
+
+        <!-- LOGISTIC REGRESSION !-->
+        <table class="hp-table" id="logistic_regression" style="display: none">
+            <tr>
+                <td>Penalty</td>
+                <td style="text-align: right">
+                    <select class="base-select" name="logreg_penalty">
+                        <option value="l1">l1</option>
+                        <option value="l2" selected="selected">l2</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>C</td>
+                <td style="text-align: right"><input type="number" value="1.0" class="base-num-select" style="width: 80px;" min="0" name="logreg_C"></td>
+            </tr>
+            <tr>
+                <td>Fit Intercept</td>
+                <td style="text-align: right"><label class="switch"><input type="checkbox" name="logreg_fit_intercept" checked><span class="slider round"></span></label></td>
+            </tr>
+        </table>
+
+        <!-- LINEAR DISCRIMINANT ANALYSIS !-->
+        <table class="hp-table" id="linear_discriminant_analysis" style="display: none">
+            <tr>
+                <td>Solver</td>
+                <td style="text-align: right">
+                    <select class="base-select" name="lda_solver">
+                        <option value="svd" selected="selected">Singular Value Decomposition</option>
+                        <option value="lsqr">Least Squares</option>
+                        <option value="eigen">Eigenvalue Decomposition</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <!-- DECISION TREE !-->
+        <table class="hp-table" id="decision_tree_regressor" style="display: none">
+            <tr>
+                <td>Solver</td>
+                <td style="text-align: right">
+                    <select class="base-select" name="dtr_criterion">
+                        <option value="mse" selected="selected">Mean Squared Error</option>
+                        <option value="friedman_mse">Friedman Mean Squared Error</option>
+                        <option value="mae">Mean Absolute Error</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Max Depth</td>
+                <td style="text-align: right">
+                    <input type="number" value="5" class="base-num-select" min="0" name="dtr_custom_depth" id="dtr_max_depth_custom" style="width: 80px; display: none;">
+                    <select class="base-select" name="dtr_max_depth" id="dtr_max_depth_select">
+                        <option value="none" selected="selected">Default</option>
+                        <option value="custom">Custom Depth</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Pre-sort</td>
+                <td style="text-align: right"><label class="switch"><input type="checkbox" name="dtr_presort"><span class="slider round"></span></label></td>
             </tr>
         </table>
         <hr>
@@ -71,6 +135,16 @@
 </body>
 
 <script>
+    $("#dtr_max_depth_select").change(function(){
+        var selection = $("#dtr_max_depth_select option:selected").text();
+        if (selection === 'Custom Depth') {
+            $("#dtr_max_depth_custom").show();
+        }
+        else {
+            $("#dtr_max_depth_custom").hide();
+        }
+    });
+
     $.fn.multiline = function(text){
         this.text(text);
         this.html(this.html().replace(/\n/g,'<br/>'));
@@ -80,25 +154,27 @@
     $('#alg_select').change(function() {
         var alg_type = $("#alg_select option:selected").text();
         var text = "";
+        $("#hyperparameters").children().hide();
+        $("#tune_header").show();
         if (alg_type === 'Linear Regression') {
-            $('#hyperparameters').show();
+            $('#linear_regression').show();
             text = 'Linear Regression is a method of modeling a linear relationship between dependent variables and independent variables.\n' +
                 'This model is used for predicting numerical values.';
         }
         else if (alg_type === 'Logistic Regression') {
-            $('#hyperparameters').hide();
+            $('#logistic_regression').show();
             text = 'Logistic Regression is a form of binomial regression used to classify samples from two different samples. When given more than two classes, this algorithm will default to softmax regression.\n' +
                 'This model is used for classifying samples.';
         }
         else if (alg_type === 'Linear Discriminant Analysis') {
-            $('#hyperparameters').hide();
+            $('#linear_discriminant_analysis').show();
             text = 'Linear Discriminant Analysis (LDA) is a linear classifier much like logistic regression, but with some key differences. LDA is preferred over binary logistic regression when all requirements are met.\n' +
                 'This model is used for classifying samples.';
         }
-        else if (alg_type === 'Decision Tree') {
-            $('#hyperparameters').hide();
+        else if (alg_type === 'Decision Tree Regressor') {
+            $('#decision_tree_regressor').show();
             text = 'Descision Tree learning uses a decision tree as a predictive model with conditionals.\n' +
-                'This model is used for classifying samples.';
+                'This model is used for predicting numerical values.';
         }
         else if (alg_type === 'Gaussian Naive Bayes') {
             $('#hyperparameters').hide();

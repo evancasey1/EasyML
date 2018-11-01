@@ -7,7 +7,7 @@ class ALGORITHM:
     LINEAR_REGRESSION = 1
     LOGISTIC_REGRESSION = 2
     LINEAR_DISCRIMINANT_ANALYSIS = 3
-    DECISION_TREE = 4
+    DECISION_TREE_REGRESSOR = 4
     GAUSSIAN_NAIVE_BAYES = 5
     RANDOM_FOREST_CLASSIFIER = 6
     RANDOM_FOREST_REGRESSOR = 7
@@ -22,7 +22,7 @@ ALGORITHM_NAME_MAP = {
     str(ALGORITHM.LINEAR_REGRESSION): 'Linear Regression',
     str(ALGORITHM.LOGISTIC_REGRESSION): 'Logistic Regression',
     str(ALGORITHM.LINEAR_DISCRIMINANT_ANALYSIS): 'Linear Discriminant Analysis',
-    str(ALGORITHM.DECISION_TREE): 'Decision Tree',
+    str(ALGORITHM.DECISION_TREE_REGRESSOR): 'Decision Tree Regressor',
     str(ALGORITHM.GAUSSIAN_NAIVE_BAYES): 'Gaussian Naive Bayes',
     str(ALGORITHM.RANDOM_FOREST_CLASSIFIER): 'Random Forest Classifier',
     str(ALGORITHM.K_NEAREST_NEIGHBORS_CLASSIFIER): 'K Nearest Neighbors Classifier',
@@ -34,10 +34,10 @@ ALGORITHM_NAME_MAP = {
 }
 
 ALGORITHM_PARAM_MAP = {
-    str(ALGORITHM.LINEAR_REGRESSION): ['lr_normalize', 'lr_fit_intercept'],
-    str(ALGORITHM.LOGISTIC_REGRESSION): [],
-    str(ALGORITHM.LINEAR_DISCRIMINANT_ANALYSIS): [],
-    str(ALGORITHM.DECISION_TREE): [],
+    str(ALGORITHM.LINEAR_REGRESSION): ['linreg_normalize', 'linreg_fit_intercept'],
+    str(ALGORITHM.LOGISTIC_REGRESSION): ['logreg_fit_intercept', 'logreg_C', 'logreg_penalty'],
+    str(ALGORITHM.LINEAR_DISCRIMINANT_ANALYSIS): ['lda_solver'],
+    str(ALGORITHM.DECISION_TREE_REGRESSOR): ['dtr_criterion', 'dtr_presort', 'dtr_max_depth'],
     str(ALGORITHM.GAUSSIAN_NAIVE_BAYES): [],
     str(ALGORITHM.RANDOM_FOREST_CLASSIFIER): [],
     str(ALGORITHM.K_NEAREST_NEIGHBORS_CLASSIFIER): [],
