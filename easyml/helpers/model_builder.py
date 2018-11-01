@@ -301,14 +301,21 @@ def create_nearest_centroid(input_df, target_df, parameters):
 
 
 def create_support_vector_machine_classifier(input_df, target_df, parameters):
-    clf = svm.SVC()
+    kernel = parameters.get('svc_kernel', 'rbf')
+    degree = parameters.get('svc_degree', 3)
+    c = parameters.get('svc_C', 1.0)
+
+    clf = svm.SVC(kernel=kernel, degree=degree, C=c)
     clf.fit(input_df, target_df)
 
     return clf
 
 
 def create_support_vector_machine_regressor(input_df, target_df, parameters):
-    clf = svm.SVR()
+    kernel = parameters.get('svr_kernel', 'rbf')
+    degree = parameters.get('svr_degree', 3)
+
+    clf = svm.SVR(kernel=kernel, degree=degree)
     clf.fit(input_df, target_df)
 
     return clf

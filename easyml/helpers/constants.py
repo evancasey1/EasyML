@@ -43,7 +43,7 @@ ALGORITHM_PARAM_MAP = {
     str(ALGORITHM.RANDOM_FOREST_REGRESSOR): ['rfr_criterion', 'rfr_n_estimators', 'rfr_max_depth', 'rfr_custom_depth'],
     str(ALGORITHM.K_NEAREST_NEIGHBORS_CLASSIFIER): ['nnc_weights', 'nnc_algorithm', 'nnc_k', 'nnc_p'],
     str(ALGORITHM.K_NEAREST_NEIGHBORS_REGRESSOR): ['nnr_weights', 'nnr_algorithm', 'nnr_k', 'nnr_p'],
-    str(ALGORITHM.SUPPORT_VECTOR_MACHINE_CLASSIFIER): ['svc_degree', 'svc_C'],
-    str(ALGORITHM.SUPPORT_VECTOR_MACHINE_REGRESSOR): ['svr_degree'],
+    str(ALGORITHM.SUPPORT_VECTOR_MACHINE_CLASSIFIER): ['svc_degree', 'svc_C', 'svc_kernel'],
+    str(ALGORITHM.SUPPORT_VECTOR_MACHINE_REGRESSOR): ['svr_degree', 'svr_kernel'],
     str(ALGORITHM.NEAREST_CENTROID): [],
 }
