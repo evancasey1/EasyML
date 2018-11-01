@@ -1,15 +1,3 @@
-import json
-import pandas as pd
-import numpy as np
-import traceback
-import msgpack
-import math
-import base64
-import pickle
-
-from pprint import pprint
-
-import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
@@ -17,7 +5,6 @@ from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.model_selection import cross_val_score
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.naive_bayes import GaussianNB
@@ -103,23 +90,16 @@ def save_model(model, alg_type, algorithm_type_num, file_id):
 
 def create_linear_regression_model(input_df, target_df):
     lin_reg = LinearRegression().fit(input_df, target_df)
-    print("Coef:", lin_reg.coef_)
-    print("Intercept:", lin_reg.intercept_)
 
     return lin_reg
 
 def create_logistic_regression_model(input_df, target_df):
-    x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
     steps = [('std_scaler', StandardScaler())]
     steps += [('log_regression', LogisticRegression(penalty='l2', multi_class='auto'))]
     pipe = Pipeline(steps)
 
     parameters = {'log_regression__C': [0.001, 0.01, 0.1, 1, 10, 100]}
     gs = GridSearchCV(estimator=pipe, param_grid=parameters, cv=5)
-
-    clf = gs.fit(x_train, y_train)
-    print("Best params:")
-    pprint(clf.best_params_)
 
     clf = gs.fit(input_df, target_df)
     return clf
@@ -150,17 +130,12 @@ def create_decision_tree(input_df, target_df):
     depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
     best_depth = depth_lst[depth_index]
 
-    print("Depth:", best_depth)
-    print("r2:", r2)
-
     dt_regr_final = DecisionTreeRegressor(max_depth=best_depth).fit(input_df, target_df)
     return dt_regr_final
 
 def create_gaussian_naive_bayes(input_df, target_df):
-    x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
-
     gnb = GaussianNB()
-    gnb.fit(x_train, y_train.values.ravel())
+    gnb.fit(input_df, target_df)
 
     return gnb
 
@@ -185,9 +160,6 @@ def create_random_forest_classifier(input_df, target_df):
 
     depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
     best_depth = depth_lst[depth_index]
-
-    print("Depth:", best_depth)
-    print("r2:", r2)
 
     rf_clf = RandomForestClassifier(n_estimators=n_est, max_depth=best_depth).fit(input_df, target_df.values.ravel())
     return rf_clf
@@ -214,40 +186,29 @@ def create_random_forest_regressor(input_df, target_df):
     depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
     best_depth = depth_lst[depth_index]
 
-    print("Depth:", best_depth)
-    print("r2:", r2)
-
     rf_clf = RandomForestRegressor(n_estimators=n_est, max_depth=best_depth).fit(input_df, target_df.values.ravel())
     return rf_clf
 
 def create_k_nearest_neighbors_classifier(input_df, target_df):
-    neighbors = KNeighborsClassifier(n_neighbors=5, algorithm='ball_tree')
+    neighbors = KNeighborsClassifier(n_neighbors=5, algorithm='auto')
     neighbors.fit(input_df, target_df)
 
     return neighbors
 
 def create_k_nearest_neighbors_regressor(input_df, target_df):
-    neighbors = KNeighborsRegressor(n_neighbors=5, algorithm='ball_tree')
+    neighbors = KNeighborsRegressor(n_neighbors=5, algorithm='auto')
     neighbors.fit(input_df, target_df)
 
     return neighbors
 
 def create_nearest_centroid(input_df, target_df):
-    x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
     clf = NearestCentroid()
-
-    clf.fit(x_train, y_train)
-    print("Predict: ", clf.predict(x_valid))
-    print()
-    print("Score: ", clf.score(x_train, y_train))
-
-    # Final model
     clf.fit(input_df, target_df)
 
     return clf
 
 def create_support_vector_machine_classifier(input_df, target_df):
-    clf = svm.SVC(gamma='scale')
+    clf = svm.SVC()
     clf.fit(input_df, target_df)
 
     return clf
