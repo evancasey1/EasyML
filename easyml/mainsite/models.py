@@ -50,3 +50,4 @@ class MLModel(models.Model):
         on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     display_name = models.CharField(max_length=255)
+    parameters = models.TextField(blank=False, null=False)
