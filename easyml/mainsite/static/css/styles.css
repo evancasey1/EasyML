@@ -88,7 +88,9 @@ div.center {
 }
 
 .column-select-table th, td {
-    border-bottom: 3px solid white;
+    border-bottom: 3px solid black;
+    border-collapse: collapse;
+    border: 1px solid black;
 }
 
 .column-select-table td {
@@ -117,8 +119,16 @@ tr.table-head {
 }
 
 /*the container must be positioned relative:*/
-.custom-select {
+.custom-select-alg {
   position: relative;
   font-family: Arial;
   background-color: lightgrey;
+  width: 30%;
+}
+
+.custom-select-type {
+  position: relative;
+  font-family: Arial;
+  background-color: lightgrey;
+  width: 100%;
 }

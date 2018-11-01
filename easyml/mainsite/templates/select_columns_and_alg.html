@@ -12,27 +12,27 @@
     <form action="/easyml/train/setup/create-data/" method="post">
     {% csrf_token %}
     <input type="text" name="file_id" value="{{ file_id }}" hidden>
-    <table class="column-select-table center">
-        <tr style="background-color: black; line-height: 30px">
+    <table class="column-select-table left" style="border: 1px solid black; border-collapse: collapse;">
+        <tr style="background-color: black; line-height: 30px; text-align: center;">
         {% for header in headers %}
             <th style="color: lightgrey">{{ header }}</th>
         {% endfor %}
         </tr>
         <tr>
-            {% for header in headers|slice:":(headers|length)" %}
-            <th>
-                <select class="custom-select" name="{{ header }}">
+            {% for header in headers %}
+            <th style="padding: 15px">
+                <select class="custom-select-type" name="{{ header }}">
                   <option value="ignore">Ignore</option>
                   <option value="input" selected>Input</option>
                   <option value="target">Target</option>
                 </select>
             </th>
-        {% endfor %}
+            {% endfor %}
         </tr>
     </table>
     <hr>
     <h4>Select Algorithm: </h4>
-    <select class="align-r custom-select" name="algorithm">
+    <select class="align-r custom-select-alg" name="algorithm">
     {%  for alg in algorithms %}
         <option value="{{ alg.num }}">{{ alg.name }}</option>
     {% endfor %}
@@ -42,7 +42,9 @@
     <input class="btn btn-primary" type="submit" value="Submit">
     </form>
     <!--<img src="/easyml/data/render-plot/">!-->
-    <img src="data:image/png;base64,{{ graphic }}" class="img-center"/>
+    {% if graphic %}
+        <img src="data:image/png;base64,{{ graphic }}" class="img-center"/>
+    {% endif %}
 </div>
 </body>
 {% endblock %}

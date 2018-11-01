@@ -221,17 +221,18 @@ def select_columns_and_alg(request):
 
     file_data = CsvFileData.objects.filter(parent_file_id=file_id).order_by('column_num')
 
-    f = matplotlib.figure.Figure()
-    buf = io.BytesIO()
+    if len(set(file_data.values_list('column_num', flat=True))) <= 8:
+        f = matplotlib.figure.Figure()
+        buf = io.BytesIO()
 
-    data_df = get_dataframe(file_data)
-    pd.plotting.scatter_matrix(data_df)
-    plt.gcf().subplots_adjust(bottom=0.15)
+        data_df = get_dataframe(file_data)
+        pd.plotting.scatter_matrix(data_df)
+        plt.gcf().subplots_adjust(bottom=0.15)
 
-    plt.savefig(buf, format='png')
-    plt.close(f)
+        plt.savefig(buf, format='png')
+        plt.close(f)
 
-    context['graphic'] = base64.b64encode(buf.getvalue()).decode('ascii')
+        context['graphic'] = base64.b64encode(buf.getvalue()).decode('ascii')
 
     return render(request, 'select_columns_and_alg.html', context=context)
 
