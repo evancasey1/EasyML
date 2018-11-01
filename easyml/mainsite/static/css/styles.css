@@ -88,9 +88,7 @@ div.center {
 }
 
 .column-select-table th, td {
-    border-bottom: 3px solid black;
-    border-collapse: collapse;
-    border: 1px solid black;
+    border-bottom: 3px solid lightslategrey;
 }
 
 .column-select-table td {

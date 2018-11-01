@@ -48,8 +48,11 @@ def create_model(algorithm_type_num, file_id):
     if algorithm_type_num == ALGORITHM.LINEAR_REGRESSION:
         model = create_linear_regression_model(input_df, target_df)
 
-    elif algorithm_type_num == ALGORITHM.K_NEAREST_NEIGHBORS:
-        model = create_k_nearest_neighbors_model(input_df, target_df)
+    elif algorithm_type_num == ALGORITHM.K_NEAREST_NEIGHBORS_CLASSIFIER:
+        model = create_k_nearest_neighbors_classifier(input_df, target_df)
+
+    elif algorithm_type_num == ALGORITHM.K_NEAREST_NEIGHBORS_REGRESSOR:
+        model = create_k_nearest_neighbors_regressor(input_df, target_df)
 
     elif algorithm_type_num == ALGORITHM.LOGISTIC_REGRESSION:
         model = create_logistic_regression_model(input_df, target_df)
@@ -72,8 +75,11 @@ def create_model(algorithm_type_num, file_id):
     elif algorithm_type_num == ALGORITHM.RANDOM_FOREST_REGRESSOR:
         model = create_random_forest_regressor(input_df, target_df)
 
-    elif algorithm_type_num == ALGORITHM.SUPPORT_VECTOR_MACHINE:
-        model = create_support_vector_machine(input_df, target_df)
+    elif algorithm_type_num == ALGORITHM.SUPPORT_VECTOR_MACHINE_CLASSIFIER:
+        model = create_support_vector_machine_classifier(input_df, target_df)
+
+    elif algorithm_type_num == ALGORITHM.SUPPORT_VECTOR_MACHINE_REGRESSOR:
+        model = create_support_vector_machine_regressor(input_df, target_df)
 
     if model:
         save_model(model, alg_type, algorithm_type_num, file_id)
@@ -214,7 +220,13 @@ def create_random_forest_regressor(input_df, target_df):
     rf_clf = RandomForestRegressor(n_estimators=n_est, max_depth=best_depth).fit(input_df, target_df.values.ravel())
     return rf_clf
 
-def create_k_nearest_neighbors_model(input_df, target_df):
+def create_k_nearest_neighbors_classifier(input_df, target_df):
+    neighbors = KNeighborsClassifier(n_neighbors=3, algorithm='ball_tree')
+    neighbors.fit(input_df, target_df)
+
+    return neighbors
+
+def create_k_nearest_neighbors_regressor(input_df, target_df):
     neighbors = KNeighborsClassifier(n_neighbors=3, algorithm='ball_tree')
     neighbors.fit(input_df, target_df)
 
@@ -234,8 +246,14 @@ def create_nearest_centroid(input_df, target_df):
 
     return clf
 
-def create_support_vector_machine(input_df, target_df):
+def create_support_vector_machine_classifier(input_df, target_df):
     clf = svm.SVC(gamma='scale')
+    clf.fit(input_df, target_df)
+
+    return clf
+
+def create_support_vector_machine_regressor(input_df, target_df):
+    clf = svm.SVR()
     clf.fit(input_df, target_df)
 
     return clf

@@ -13,3 +13,4 @@ scipy==1.1.0
 sklearn==0.0
 django-picklefield==1.1.0
 matplotlib==3.0.0
+django-jquery==3.1.0

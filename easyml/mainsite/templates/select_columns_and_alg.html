@@ -31,20 +31,98 @@
         </tr>
     </table>
     <hr>
-    <h4>Select Algorithm: </h4>
-    <select class="align-r custom-select-alg" name="algorithm">
-    {%  for alg in algorithms %}
-        <option value="{{ alg.num }}">{{ alg.name }}</option>
-    {% endfor %}
-    </select>
-    <br>
+    <div style="float: left; width: 50%;">
+        <h4>Select Algorithm: </h4>
+        <select class="align-r custom-select-alg" name="algorithm" id="alg_select">
+        {%  for alg in algorithms %}
+            <option value="{{ alg.num }}">{{ alg.name }}</option>
+        {% endfor %}
+        </select>
+        <br>
+    </div>
+    <div style="float:right; width: 50%;" id="alg_desc">
+        <p id="alg_desc_p">
+        Linear Regression is a method of modeling a linear relationship between dependent variables and independent variables.<br>This model is used for predicting numerical values for simple relationships.
+        </p>
+    </div>
     <hr>
-    <input class="btn btn-primary" type="submit" value="Submit">
+    <div style="clear: both"></div>
+    <div id="hyperparameters" style="display: none">
+        <h4>Tune Hyperparameters</h4>
+        <hr>
+    </div>
     </form>
     <!--<img src="/easyml/data/render-plot/">!-->
     {% if graphic %}
         <img src="data:image/png;base64,{{ graphic }}" class="img-center"/>
     {% endif %}
+    <input class="btn btn-primary" type="submit" value="Submit">
 </div>
 </body>
+
+<script>
+    $.fn.multiline = function(text){
+        this.text(text);
+        this.html(this.html().replace(/\n/g,'<br/>'));
+        return this;
+    };
+
+    $('#alg_select').change(function() {
+        var alg_type = $("#alg_select option:selected").text();
+        var text = "";
+        if (alg_type === 'Linear Regression') {
+            //$('#hyperparameters').hide();
+            text = 'Linear Regression is a method of modeling a linear relationship between dependent variables and independent variables.\n' +
+                'This model is used for predicting numerical values.';
+        }
+        else if (alg_type === 'Logistic Regression') {
+            //$('#hyperparameters').show();
+            text = 'Logistic Regression is a form of binomial regression used to classify samples from two different samples. When given more than two classes, this algorithm will default to softmax regression.\n' +
+                'This model is used for classifying samples.';
+        }
+        else if (alg_type === 'Linear Discriminant Analysis') {
+            //$('#hyperparameters').show();
+            text = 'Linear Discriminant Analysis (LDA) is a linear classifier much like logistic regression, but with some key differences. LDA is preferred over binary logistic regression when all requirements are met.\n' +
+                'This model is used for classifying samples.';
+        }
+        else if (alg_type === 'Decision Tree') {
+            text = 'Descision Tree learning uses a decision tree as a predictive model with conditionals.\n' +
+                'This model is used for classifying samples.';
+        }
+        else if (alg_type === 'Gaussian Naive Bayes') {
+            text = 'Naive Bayes classifiers are simple probabilistic models for predicting class based on Bayes\' theorem with a strong assumed correlation between features. Gaussian Naive Bayes uses a Gaussian distribution.\n' +
+                'This model is used for classifying samples.';
+        }
+        else if (alg_type === 'Random Forest Classifier') {
+            text = 'Random Forest algorithms construct many decision trees in order to combat overfitting. Random Forest Classifiers output the mode of the classes to make a categorical prediction.\n' +
+                'This model is used for classifying samples.';
+        }
+        else if (alg_type === 'Random Forest Regressor') {
+            text = 'Random Forest algorithms construct many decision trees in order to combat overfitting. Random Forest Regressors output the mean of the classes to make a numerical prediction.\n' +
+                'This model is used for predicting numerical values.';
+        }
+        else if (alg_type === 'K Nearest Neighbors Classifier') {
+            text = 'K-Nearest Neighbors is a simple machine learning algorithm that calculates the values of the nearest k neighbors of a datapoint. The predicted class is the mode of the values of its nearest k neighbors\n' +
+                'This model is used for classifying samples.';
+        }
+        else if (alg_type === 'K Nearest Neighbors Regressor') {
+            text = 'K-Nearest Neighbors is a simple machine learning algorithm that calculates the values of the nearest k neighbors of a datapoint. The predicted class is the mean of the values of its nearest k neighbors\n' +
+                'This model is used for predicting numerical values.';
+        }
+        else if (alg_type === 'Support Vector Machine Classifier') {
+            text = 'Support Vector Machine (SVM) models split the data into two distinct groups with as wide a gap as possible. They are most effective in a high-dimensional space.\n' +
+                'This model is used for classifying samples.';
+        }
+        else if (alg_type === 'Support Vector Machine Regressor') {
+            text = 'Support Vector Machine (SVM) models split the data into two distinct groups with as wide a gap as possible. They are most effective in a high-dimensional space.\n' +
+                'This model is used for predicting numerical values.';
+        }
+        else if (alg_type === 'Nearest Centroid') {
+            text = 'Nearest Centroid models assign the label of the training class with the mean closest to the observation.\n' +
+                'This model is used for classifying samples.';
+        }
+        $('#alg_desc_p').multiline(text)
+        
+    });
+</script>
 {% endblock %}
