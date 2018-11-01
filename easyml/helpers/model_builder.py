@@ -1,3 +1,5 @@
+import json
+
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
@@ -69,9 +71,9 @@ def create_model(algorithm_type_num, file_id, parameters):
         model = create_support_vector_machine_regressor(input_df, target_df, parameters)
 
     if model:
-        save_model(model, alg_type, algorithm_type_num, file_id)
+        save_model(model, alg_type, algorithm_type_num, file_id, parameters)
 
-def save_model(model, alg_type, algorithm_type_num, file_id):
+def save_model(model, alg_type, algorithm_type_num, file_id, parameters):
     parent_file = CsvFile.objects.get(id=file_id)
     display_name = "{}: {}".format(parent_file.display_name, alg_type)
 
@@ -85,11 +87,16 @@ def save_model(model, alg_type, algorithm_type_num, file_id):
     model_obj.data = model
     model_obj.name = parent_file.display_name
     model_obj.display_name = display_name
+    model_obj.parameters = json.dumps(parameters)
     model_obj.parent_file = CsvFile.objects.get(id=file_id)
     model_obj.save()
 
 def create_linear_regression_model(input_df, target_df, parameters):
-    lin_reg = LinearRegression().fit(input_df, target_df)
+    fit_intercept = bool(parameters.get('lr_fit_intercept', None))
+    normalize = bool(parameters.get('lr_normalize', None))
+
+    lin_reg = LinearRegression(fit_intercept=fit_intercept, normalize=normalize)
+    lin_reg = lin_reg.fit(input_df, target_df)
 
     return lin_reg
 
