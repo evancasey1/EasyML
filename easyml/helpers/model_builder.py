@@ -264,14 +264,30 @@ def create_random_forest_regressor(input_df, target_df, parameters):
 
 
 def create_k_nearest_neighbors_classifier(input_df, target_df, parameters):
-    neighbors = KNeighborsClassifier(n_neighbors=5, algorithm='auto')
+    n_neighbors = parameters.get('nnc_k', 5)
+    weights = parameters.get('weights', 'uniform')
+    algorithm = parameters.get('algorithm', 'auto')
+    p = parameters.get('nnc_p', 2)
+
+    neighbors = KNeighborsClassifier(n_neighbors=n_neighbors,
+                                     algorithm=algorithm,
+                                     weights=weights,
+                                     p=p)
     neighbors.fit(input_df, target_df)
 
     return neighbors
 
 
 def create_k_nearest_neighbors_regressor(input_df, target_df, parameters):
-    neighbors = KNeighborsRegressor(n_neighbors=5, algorithm='auto')
+    n_neighbors = parameters.get('nnc_k', 5)
+    weights = parameters.get('weights', 'uniform')
+    algorithm = parameters.get('algorithm', 'auto')
+    p = parameters.get('nnc_p', 2)
+
+    neighbors = KNeighborsRegressor(n_neighbors=n_neighbors,
+                                    algorithm=algorithm,
+                                    weights=weights,
+                                    p=p)
     neighbors.fit(input_df, target_df)
 
     return neighbors
