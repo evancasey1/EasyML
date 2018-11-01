@@ -50,10 +50,10 @@ def get_user_models(user):
 
 def get_alg_lst():
     alg_lst = []
-    for alg in algorithm_name_map:
+    for alg in ALGORITHM_NAME_MAP:
         alg_lst.append({
             'num': int(alg),
-            'name': algorithm_name_map[alg]
+            'name': ALGORITHM_NAME_MAP[alg]
         })
 
     return sorted(alg_lst, key=itemgetter('num'))

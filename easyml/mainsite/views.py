@@ -12,7 +12,7 @@ from matplotlib import pylab
 from pylab import *
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
-from helpers.constants import COLUMN_TYPE, algorithm_name_map
+from helpers.constants import COLUMN_TYPE, ALGORITHM_NAME_MAP
 from helpers.model_builder import create_model
 from helpers.model_predict import run_model_predict
 from helpers.util import *
@@ -271,13 +271,13 @@ def create_data(request):
     }
 
     file_id = int(request.POST.get('file_id'))
+    alg_id = request.POST.get('algorithm')
     header_map = {}
-    ignore_keys = ['csrfmiddlewaretoken', 'file_id', 'algorithm']
-    for prop in request.POST:
-        if prop in ignore_keys:
-            continue
+    file_headers = CsvFileData.objects.filter(parent_file_id=file_id).values_list('column_header', flat=True).distinct()
+    for head in file_headers:
+        header_map[head] = designation_map.get(request.POST.get(head), None)
 
-        header_map[prop] = designation_map[request.POST.get(prop)]
+    parameters = {key: request.POST.get(key, None) for key in ALGORITHM_PARAM_MAP[alg_id]}
 
     error_context = request.POST.dict()
     error_context['headers'] = header_map.keys()
@@ -290,7 +290,7 @@ def create_data(request):
         return render(request, 'select_columns_and_alg.html', context=error_context)
 
     algorithm_type = int(request.POST.get('algorithm'))
-    create_model(algorithm_type, file_id)
+    create_model(algorithm_type, file_id, parameters)
 
     return HttpResponseRedirect('/easyml/')
 

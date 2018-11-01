@@ -10,12 +10,12 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.naive_bayes import GaussianNB
 from sklearn import svm
 
-from .constants import COLUMN_TYPE, ALGORITHM, algorithm_name_map
+from .constants import COLUMN_TYPE, ALGORITHM, ALGORITHM_NAME_MAP
 from mainsite.models import CsvFile, CsvFileData, MLModel
 from .util import get_dataframe
 
 
-def create_model(algorithm_type_num, file_id):
+def create_model(algorithm_type_num, file_id, parameters):
     file_data = CsvFileData.objects.filter(parent_file_id=file_id)\
         .exclude(type=COLUMN_TYPE.IGNORE).order_by('column_num')
 
@@ -27,46 +27,46 @@ def create_model(algorithm_type_num, file_id):
     target_data = file_data.filter(type=COLUMN_TYPE.TARGET)
 
     model = None
-    alg_type = algorithm_name_map[str(algorithm_type_num)]
+    alg_type = ALGORITHM_NAME_MAP[str(algorithm_type_num)]
 
     input_df = get_dataframe(input_data)
     target_df = get_dataframe(target_data)
 
     if algorithm_type_num == ALGORITHM.LINEAR_REGRESSION:
-        model = create_linear_regression_model(input_df, target_df)
+        model = create_linear_regression_model(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.K_NEAREST_NEIGHBORS_CLASSIFIER:
-        model = create_k_nearest_neighbors_classifier(input_df, target_df)
+        model = create_k_nearest_neighbors_classifier(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.K_NEAREST_NEIGHBORS_REGRESSOR:
-        model = create_k_nearest_neighbors_regressor(input_df, target_df)
+        model = create_k_nearest_neighbors_regressor(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.LOGISTIC_REGRESSION:
-        model = create_logistic_regression_model(input_df, target_df)
+        model = create_logistic_regression_model(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.NEAREST_CENTROID:
-        model = create_nearest_centroid(input_df, target_df)
+        model = create_nearest_centroid(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.LINEAR_DISCRIMINANT_ANALYSIS:
-        model = create_linear_discriminant_analysis(input_df, target_df)
+        model = create_linear_discriminant_analysis(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.DECISION_TREE:
-        model = create_decision_tree(input_df, target_df)
+        model = create_decision_tree(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.GAUSSIAN_NAIVE_BAYES:
-        model = create_gaussian_naive_bayes(input_df, target_df)
+        model = create_gaussian_naive_bayes(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.RANDOM_FOREST_CLASSIFIER:
-        model = create_random_forest_classifier(input_df, target_df)
+        model = create_random_forest_classifier(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.RANDOM_FOREST_REGRESSOR:
-        model = create_random_forest_regressor(input_df, target_df)
+        model = create_random_forest_regressor(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.SUPPORT_VECTOR_MACHINE_CLASSIFIER:
-        model = create_support_vector_machine_classifier(input_df, target_df)
+        model = create_support_vector_machine_classifier(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.SUPPORT_VECTOR_MACHINE_REGRESSOR:
-        model = create_support_vector_machine_regressor(input_df, target_df)
+        model = create_support_vector_machine_regressor(input_df, target_df, parameters)
 
     if model:
         save_model(model, alg_type, algorithm_type_num, file_id)
@@ -88,12 +88,12 @@ def save_model(model, alg_type, algorithm_type_num, file_id):
     model_obj.parent_file = CsvFile.objects.get(id=file_id)
     model_obj.save()
 
-def create_linear_regression_model(input_df, target_df):
+def create_linear_regression_model(input_df, target_df, parameters):
     lin_reg = LinearRegression().fit(input_df, target_df)
 
     return lin_reg
 
-def create_logistic_regression_model(input_df, target_df):
+def create_logistic_regression_model(input_df, target_df, parameters):
     steps = [('std_scaler', StandardScaler())]
     steps += [('log_regression', LogisticRegression(penalty='l2', multi_class='auto'))]
     pipe = Pipeline(steps)
@@ -104,13 +104,13 @@ def create_logistic_regression_model(input_df, target_df):
     clf = gs.fit(input_df, target_df)
     return clf
 
-def create_linear_discriminant_analysis(input_df, target_df):
+def create_linear_discriminant_analysis(input_df, target_df, parameters):
     clf = LinearDiscriminantAnalysis()
     clf.fit(input_df, target_df)
 
     return clf
 
-def create_decision_tree(input_df, target_df):
+def create_decision_tree(input_df, target_df, parameters):
     x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
     r2_lst = []
     depth_mul = 10
@@ -133,13 +133,13 @@ def create_decision_tree(input_df, target_df):
     dt_regr_final = DecisionTreeRegressor(max_depth=best_depth).fit(input_df, target_df)
     return dt_regr_final
 
-def create_gaussian_naive_bayes(input_df, target_df):
+def create_gaussian_naive_bayes(input_df, target_df, parameters):
     gnb = GaussianNB()
     gnb.fit(input_df, target_df)
 
     return gnb
 
-def create_random_forest_classifier(input_df, target_df):
+def create_random_forest_classifier(input_df, target_df, parameters):
     x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
 
     n_est = 100
@@ -164,7 +164,7 @@ def create_random_forest_classifier(input_df, target_df):
     rf_clf = RandomForestClassifier(n_estimators=n_est, max_depth=best_depth).fit(input_df, target_df.values.ravel())
     return rf_clf
 
-def create_random_forest_regressor(input_df, target_df):
+def create_random_forest_regressor(input_df, target_df, parameters):
     x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
 
     n_est = 100
@@ -189,31 +189,31 @@ def create_random_forest_regressor(input_df, target_df):
     rf_clf = RandomForestRegressor(n_estimators=n_est, max_depth=best_depth).fit(input_df, target_df.values.ravel())
     return rf_clf
 
-def create_k_nearest_neighbors_classifier(input_df, target_df):
+def create_k_nearest_neighbors_classifier(input_df, target_df, parameters):
     neighbors = KNeighborsClassifier(n_neighbors=5, algorithm='auto')
     neighbors.fit(input_df, target_df)
 
     return neighbors
 
-def create_k_nearest_neighbors_regressor(input_df, target_df):
+def create_k_nearest_neighbors_regressor(input_df, target_df, parameters):
     neighbors = KNeighborsRegressor(n_neighbors=5, algorithm='auto')
     neighbors.fit(input_df, target_df)
 
     return neighbors
 
-def create_nearest_centroid(input_df, target_df):
+def create_nearest_centroid(input_df, target_df, parameters):
     clf = NearestCentroid()
     clf.fit(input_df, target_df)
 
     return clf
 
-def create_support_vector_machine_classifier(input_df, target_df):
+def create_support_vector_machine_classifier(input_df, target_df, parameters):
     clf = svm.SVC()
     clf.fit(input_df, target_df)
 
     return clf
 
-def create_support_vector_machine_regressor(input_df, target_df):
+def create_support_vector_machine_regressor(input_df, target_df, parameters):
     clf = svm.SVR()
     clf.fit(input_df, target_df)
 

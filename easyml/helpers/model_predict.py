@@ -23,7 +23,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn import svm
 
 from django.utils.encoding import smart_bytes
-from .constants import COLUMN_TYPE, ALGORITHM, algorithm_name_map
+from .constants import COLUMN_TYPE, ALGORITHM, ALGORITHM_NAME_MAP
 from mainsite.models import CsvFile, CsvFileData, MLModel
 from .util import get_dataframe
 
