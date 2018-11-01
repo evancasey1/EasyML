@@ -34,6 +34,8 @@ def create_model(algorithm_type_num, file_id, parameters):
     input_df = get_dataframe(input_data)
     target_df = get_dataframe(target_data)
 
+    target_df = target_df.values.ravel()
+
     if algorithm_type_num == ALGORITHM.LINEAR_REGRESSION:
         model = create_linear_regression_model(input_df, target_df, parameters)
 
@@ -53,7 +55,7 @@ def create_model(algorithm_type_num, file_id, parameters):
         model = create_linear_discriminant_analysis(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.DECISION_TREE_REGRESSOR:
-        model = create_decision_tree(input_df, target_df, parameters)
+        model = create_decision_tree_regressor(input_df, target_df, parameters)
 
     elif algorithm_type_num == ALGORITHM.GAUSSIAN_NAIVE_BAYES:
         model = create_gaussian_naive_bayes(input_df, target_df, parameters)
@@ -126,37 +128,51 @@ def create_logistic_regression_model(input_df, target_df, parameters):
         parameters = {'log_regression__C': [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000]}
         logreg = GridSearchCV(estimator=pipe, param_grid=parameters, cv=5)
 
-    clf = logreg.fit(input_df, target_df.values.ravel())
+    clf = logreg.fit(input_df, target_df)
     return clf
 
 
 def create_linear_discriminant_analysis(input_df, target_df, parameters):
-    clf = LinearDiscriminantAnalysis()
+    solver = parameters.get('lda_solver', 'svd')
+    clf = LinearDiscriminantAnalysis(solver=solver)
     clf.fit(input_df, target_df)
 
     return clf
 
 
-def create_decision_tree(input_df, target_df, parameters):
-    x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
-    r2_lst = []
-    depth_iter = 10
-    depth_start = 2
+def create_decision_tree_regressor(input_df, target_df, parameters):
+    criterion = parameters.get('dtr_criterion', 'mse')
+    presort = bool(parameters.get('dtr_presort', False))
+    max_depth_choice = parameters.get('dtr_max_depth', None)
 
-    depth_lst = []
-    for i in range(depth_iter):
-        depth_lst.append(depth_start**i)
+    if max_depth_choice == 'none':
+        best_depth = None
 
-    # Select model with best r^2 and least depth
-    for depth in depth_lst:
-        dt_regr = DecisionTreeRegressor(max_depth=depth)
-        dt_regr.fit(x_train, y_train)
-        r2_lst.append(dt_regr.score(x_valid, y_valid))
+    elif max_depth_choice == 'custom':
+        best_depth = parameters.get('dtr_custom_depth', 5)
 
-    depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
-    best_depth = depth_lst[depth_index]
+    else:
+        x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
+        r2_lst = []
+        depth_iter = 10
+        depth_start = 2
 
-    dt_regr_final = DecisionTreeRegressor(max_depth=best_depth).fit(input_df, target_df)
+        depth_lst = []
+        for i in range(depth_iter):
+            depth_lst.append(depth_start**i)
+
+        # Select model with best r^2 and least depth
+        for depth in depth_lst:
+            dt_regr = DecisionTreeRegressor(max_depth=depth, presort=presort, criterion=criterion)
+            dt_regr.fit(x_train, y_train)
+            r2_lst.append(dt_regr.score(x_valid, y_valid))
+
+        depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
+        best_depth = depth_lst[depth_index]
+
+    dt_regr_final = DecisionTreeRegressor(max_depth=best_depth,
+                                          presort=presort, 
+                                          criterion=criterion).fit(input_df, target_df)
     return dt_regr_final
 
 
