@@ -290,6 +290,9 @@ def create_data(request):
         return render(request, 'select_columns_and_alg.html', context=error_context)
 
     algorithm_type = int(alg_id)
+    from pprint import pprint
+    pprint(parameters)
+    print()
     create_model(algorithm_type, file_id, parameters)
 
     return HttpResponseRedirect('/easyml/')

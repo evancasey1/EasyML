@@ -48,7 +48,7 @@
     <hr>
     <div style="clear: both"></div>
     <div id="hyperparameters" style="display: block">
-        <h4 id="tune_header">Tune Parameters</h4>
+        <h4 id="tune_header">Tune Algorithm Settings</h4>
         <!-- LINEAR REGRESSION !-->
         <table class="hp-table" id="linear_regression" style="display: block">
             <tr>
@@ -74,7 +74,13 @@
             </tr>
             <tr>
                 <td>Penalty Parameter C</td>
-                <td style="text-align: right"><input type="number" value="1.0" class="base-num-select" style="width: 80px;" min="0" name="logreg_C"></td>
+                <td style="text-align: right">
+                    <input type="number" value="1.0" class="base-num-select" style="width: 80px; display: none" min="0" name="logreg_C" id="logreg_C_number">
+                    <select class="base-select" name="logreg_C_select" id="logreg_C_select_id">
+                        <option value="auto" selected="selected">Automatic</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td>Fit Intercept</td>
@@ -301,6 +307,16 @@
         }
         else {
             $("#dtr_max_depth_custom").hide();
+        }
+    });
+
+    $("#logreg_C_select_id").change(function(){
+        let selection = $("#logreg_C_select_id option:selected").text();
+        if (selection === 'Custom') {
+            $("#logreg_C_number").show();
+        }
+        else {
+            $("#logreg_C_number").hide();
         }
     });
 

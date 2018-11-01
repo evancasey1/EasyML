@@ -104,14 +104,29 @@ def create_linear_regression_model(input_df, target_df, parameters):
 
 
 def create_logistic_regression_model(input_df, target_df, parameters):
-    steps = [('std_scaler', StandardScaler())]
-    steps += [('log_regression', LogisticRegression(penalty='l2', multi_class='auto'))]
-    pipe = Pipeline(steps)
+    logreg_penalty = parameters.get('logreg_penalty', 'l2')
+    logreg_c_select = parameters.get('logreg_C_select', None)
+    logreg_fit_intercept = bool(parameters.get('logreg_fit_intercept', None))
 
-    parameters = {'log_regression__C': [0.001, 0.01, 0.1, 1, 10, 100]}
-    gs = GridSearchCV(estimator=pipe, param_grid=parameters, cv=5)
+    if not logreg_c_select or logreg_c_select == 'custom':
+        logreg_c = int(parameters.get('logreg_C', 1.0))
+        logreg = LogisticRegression(C=logreg_c,
+                                    penalty=logreg_penalty,
+                                    fit_intercept=logreg_fit_intercept,
+                                    solver='lbfgs')
 
-    clf = gs.fit(input_df, target_df)
+    else:
+        steps = [('std_scaler', StandardScaler())]
+        steps += [('log_regression', LogisticRegression(penalty=logreg_penalty,
+                                                        multi_class='auto',
+                                                        fit_intercept=logreg_fit_intercept,
+                                                        solver='lbfgs'))]
+        pipe = Pipeline(steps)
+
+        parameters = {'log_regression__C': [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000]}
+        logreg = GridSearchCV(estimator=pipe, param_grid=parameters, cv=5)
+
+    clf = logreg.fit(input_df, target_df.values.ravel())
     return clf
 
 

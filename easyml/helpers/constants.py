@@ -35,7 +35,7 @@ ALGORITHM_NAME_MAP = {
 
 ALGORITHM_PARAM_MAP = {
     str(ALGORITHM.LINEAR_REGRESSION): ['linreg_normalize', 'linreg_fit_intercept'],
-    str(ALGORITHM.LOGISTIC_REGRESSION): ['logreg_fit_intercept', 'logreg_C', 'logreg_penalty'],
+    str(ALGORITHM.LOGISTIC_REGRESSION): ['logreg_fit_intercept', 'logreg_C', 'logreg_C_select', 'logreg_penalty'],
     str(ALGORITHM.LINEAR_DISCRIMINANT_ANALYSIS): ['lda_solver'],
     str(ALGORITHM.DECISION_TREE_REGRESSOR): ['dtr_criterion', 'dtr_presort', 'dtr_max_depth', 'dtr_custom_depth'],
     str(ALGORITHM.GAUSSIAN_NAIVE_BAYES): [],
