@@ -10,6 +10,7 @@
 <div class="main">
     <p class="page-header">Manage Data</p>
     <ul>
+    {% if valid_files %}
         <table class="select-table table-striped center">
             {% for file in valid_files %}
                 <tr>
@@ -23,6 +24,9 @@
                 </tr>
             {% endfor %}
         </table>
+    {% else %}
+        You have not uploaded any data yet.
+    {% endif %}
     </ul>
 </div>
 </body>
