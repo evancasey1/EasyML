@@ -73,6 +73,7 @@ def create_model(algorithm_type_num, file_id, parameters):
     if model:
         save_model(model, alg_type, algorithm_type_num, file_id, parameters)
 
+
 def save_model(model, alg_type, algorithm_type_num, file_id, parameters):
     parent_file = CsvFile.objects.get(id=file_id)
     display_name = "{}: {}".format(parent_file.display_name, alg_type)
@@ -91,6 +92,7 @@ def save_model(model, alg_type, algorithm_type_num, file_id, parameters):
     model_obj.parent_file = CsvFile.objects.get(id=file_id)
     model_obj.save()
 
+
 def create_linear_regression_model(input_df, target_df, parameters):
     fit_intercept = bool(parameters.get('lr_fit_intercept', None))
     normalize = bool(parameters.get('lr_normalize', None))
@@ -99,6 +101,7 @@ def create_linear_regression_model(input_df, target_df, parameters):
     lin_reg = lin_reg.fit(input_df, target_df)
 
     return lin_reg
+
 
 def create_logistic_regression_model(input_df, target_df, parameters):
     steps = [('std_scaler', StandardScaler())]
@@ -111,11 +114,13 @@ def create_logistic_regression_model(input_df, target_df, parameters):
     clf = gs.fit(input_df, target_df)
     return clf
 
+
 def create_linear_discriminant_analysis(input_df, target_df, parameters):
     clf = LinearDiscriminantAnalysis()
     clf.fit(input_df, target_df)
 
     return clf
+
 
 def create_decision_tree(input_df, target_df, parameters):
     x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
@@ -140,11 +145,13 @@ def create_decision_tree(input_df, target_df, parameters):
     dt_regr_final = DecisionTreeRegressor(max_depth=best_depth).fit(input_df, target_df)
     return dt_regr_final
 
+
 def create_gaussian_naive_bayes(input_df, target_df, parameters):
     gnb = GaussianNB()
     gnb.fit(input_df, target_df)
 
     return gnb
+
 
 def create_random_forest_classifier(input_df, target_df, parameters):
     x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
@@ -171,6 +178,7 @@ def create_random_forest_classifier(input_df, target_df, parameters):
     rf_clf = RandomForestClassifier(n_estimators=n_est, max_depth=best_depth).fit(input_df, target_df.values.ravel())
     return rf_clf
 
+
 def create_random_forest_regressor(input_df, target_df, parameters):
     x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
 
@@ -196,11 +204,13 @@ def create_random_forest_regressor(input_df, target_df, parameters):
     rf_clf = RandomForestRegressor(n_estimators=n_est, max_depth=best_depth).fit(input_df, target_df.values.ravel())
     return rf_clf
 
+
 def create_k_nearest_neighbors_classifier(input_df, target_df, parameters):
     neighbors = KNeighborsClassifier(n_neighbors=5, algorithm='auto')
     neighbors.fit(input_df, target_df)
 
     return neighbors
+
 
 def create_k_nearest_neighbors_regressor(input_df, target_df, parameters):
     neighbors = KNeighborsRegressor(n_neighbors=5, algorithm='auto')
@@ -208,17 +218,20 @@ def create_k_nearest_neighbors_regressor(input_df, target_df, parameters):
 
     return neighbors
 
+
 def create_nearest_centroid(input_df, target_df, parameters):
     clf = NearestCentroid()
     clf.fit(input_df, target_df)
 
     return clf
 
+
 def create_support_vector_machine_classifier(input_df, target_df, parameters):
     clf = svm.SVC()
     clf.fit(input_df, target_df)
 
     return clf
+
 
 def create_support_vector_machine_regressor(input_df, target_df, parameters):
     clf = svm.SVR()
