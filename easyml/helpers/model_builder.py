@@ -107,10 +107,10 @@ def create_linear_regression_model(input_df, target_df, parameters):
 
 def create_logistic_regression_model(input_df, target_df, parameters):
     logreg_penalty = parameters.get('logreg_penalty', 'l2')
-    logreg_c_select = parameters.get('logreg_C_select', None)
+    logreg_c_select = parameters.get('logreg_C_select', 'custom')
     logreg_fit_intercept = bool(parameters.get('logreg_fit_intercept', False))
 
-    if not logreg_c_select or logreg_c_select == 'custom':
+    if logreg_c_select == 'custom':
         logreg_c = int(parameters.get('logreg_C', 1.0))
         logreg = LogisticRegression(C=logreg_c,
                                     penalty=logreg_penalty,
@@ -143,7 +143,7 @@ def create_linear_discriminant_analysis(input_df, target_df, parameters):
 def create_decision_tree_regressor(input_df, target_df, parameters):
     criterion = parameters.get('dtr_criterion', 'mse')
     presort = bool(parameters.get('dtr_presort', False))
-    max_depth_choice = parameters.get('dtr_max_depth', None)
+    max_depth_choice = parameters.get('dtr_max_depth', 'none')
 
     if max_depth_choice == 'none':
         best_depth = None
@@ -185,8 +185,8 @@ def create_gaussian_naive_bayes(input_df, target_df, parameters):
 
 def create_random_forest_classifier(input_df, target_df, parameters):
     criterion = parameters.get('rfc_criterion', 'gini')
-    n_estimators = parameters.get('rfc_n_estimators', 100)
-    depth_select = parameters.get('rfc_max_depth', None)
+    n_estimators = int(parameters.get('rfc_n_estimators', 100))
+    depth_select = parameters.get('rfc_max_depth', 'none')
 
     if depth_select == 'none':
         best_depth = None
@@ -225,8 +225,8 @@ def create_random_forest_classifier(input_df, target_df, parameters):
 
 def create_random_forest_regressor(input_df, target_df, parameters):
     criterion = parameters.get('rfc_criterion', 'mse')
-    n_estimators = parameters.get('rfc_n_estimators', 100)
-    depth_select = parameters.get('rfc_max_depth', None)
+    n_estimators = int(parameters.get('rfc_n_estimators', 100))
+    depth_select = parameters.get('rfc_max_depth', 'none')
 
     if depth_select == 'none':
         best_depth = None
@@ -264,10 +264,10 @@ def create_random_forest_regressor(input_df, target_df, parameters):
 
 
 def create_k_nearest_neighbors_classifier(input_df, target_df, parameters):
-    n_neighbors = parameters.get('nnc_k', 5)
+    n_neighbors = int(parameters.get('nnc_k', 5))
     weights = parameters.get('weights', 'uniform')
     algorithm = parameters.get('algorithm', 'auto')
-    p = parameters.get('nnc_p', 2)
+    p = int(parameters.get('nnc_p', 2))
 
     neighbors = KNeighborsClassifier(n_neighbors=n_neighbors,
                                      algorithm=algorithm,
@@ -279,10 +279,10 @@ def create_k_nearest_neighbors_classifier(input_df, target_df, parameters):
 
 
 def create_k_nearest_neighbors_regressor(input_df, target_df, parameters):
-    n_neighbors = parameters.get('nnc_k', 5)
+    n_neighbors = int(parameters.get('nnc_k', 5))
     weights = parameters.get('weights', 'uniform')
     algorithm = parameters.get('algorithm', 'auto')
-    p = parameters.get('nnc_p', 2)
+    p = int(parameters.get('nnc_p', 2))
 
     neighbors = KNeighborsRegressor(n_neighbors=n_neighbors,
                                     algorithm=algorithm,
@@ -302,7 +302,7 @@ def create_nearest_centroid(input_df, target_df, parameters):
 
 def create_support_vector_machine_classifier(input_df, target_df, parameters):
     kernel = parameters.get('svc_kernel', 'rbf')
-    degree = parameters.get('svc_degree', 3)
+    degree = int(parameters.get('svc_degree', 3))
     c = parameters.get('svc_C', 1.0)
 
     clf = svm.SVC(kernel=kernel, degree=degree, C=c)
@@ -313,7 +313,7 @@ def create_support_vector_machine_classifier(input_df, target_df, parameters):
 
 def create_support_vector_machine_regressor(input_df, target_df, parameters):
     kernel = parameters.get('svr_kernel', 'rbf')
-    degree = parameters.get('svr_degree', 3)
+    degree = int(parameters.get('svr_degree', 3))
 
     clf = svm.SVR(kernel=kernel, degree=degree)
     clf.fit(input_df, target_df)
