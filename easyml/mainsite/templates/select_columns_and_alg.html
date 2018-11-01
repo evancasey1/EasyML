@@ -73,7 +73,7 @@
                 </td>
             </tr>
             <tr>
-                <td>C</td>
+                <td>Penalty Parameter C</td>
                 <td style="text-align: right"><input type="number" value="1.0" class="base-num-select" style="width: 80px;" min="0" name="logreg_C"></td>
             </tr>
             <tr>
@@ -111,9 +111,10 @@
             <tr>
                 <td>Max Depth</td>
                 <td style="text-align: right">
-                    <input type="number" value="5" class="base-num-select" min="0" name="dtr_custom_depth" id="dtr_max_depth_custom" style="width: 80px; display: none;">
+                    <input type="number" value="5" class="base-num-select" min="0" name="rfc_custom_depth" id="dtr_max_depth_custom" style="width: 80px; display: none;">
                     <select class="base-select" name="dtr_max_depth" id="dtr_max_depth_select">
                         <option value="none" selected="selected">Default</option>
+                        <option value="auto">Automatic</option>
                         <option value="custom">Custom Depth</option>
                     </select>
                 </td>
@@ -121,6 +122,164 @@
             <tr>
                 <td>Pre-sort</td>
                 <td style="text-align: right"><label class="switch"><input type="checkbox" name="dtr_presort"><span class="slider round"></span></label></td>
+            </tr>
+        </table>
+
+        <!-- RANDOM FOREST CLASSIFIER !-->
+        <table class="hp-table" id="random_forest_classifier" style="display: none">
+            <tr>
+                <td>Number of Estimators</td>
+                <td style="text-align: right"><input type="number" value="100" class="base-num-select" min="0" name="rfc_n_estimators" style="width: 80px;"></td>
+            </tr>
+            <tr>
+                <td>Criterion</td>
+                <td style="text-align: right">
+                    <select class="base-select" name="rfc_criterion">
+                        <option value="gini" selected="selected">Gini Impurity</option>
+                        <option value="entropy">Information Gain Entropy</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Max Depth</td>
+                <td style="text-align: right">
+                    <input type="number" value="5" class="base-num-select" min="0" name="rfc_custom_depth" id="rfc_max_depth_custom" style="width: 80px; display: none;">
+                    <select class="base-select" name="rfc_max_depth" id="rfc_max_depth_select">
+                        <option value="none" selected="selected">Default</option>
+                        <option value="auto">Automatic</option>
+                        <option value="custom">Custom Depth</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <!-- RANDOM FOREST REGRESSOR !-->
+        <table class="hp-table" id="random_forest_regressor" style="display: none">
+            <tr>
+                <td>Number of Estimators</td>
+                <td style="text-align: right"><input type="number" value="100" class="base-num-select" min="0" name="rfr_n_estimators" style="width: 80px;"></td>
+            </tr>
+            <tr>
+                <td>Criterion</td>
+                <td style="text-align: right">
+                    <select class="base-select" name="rfr_criterion">
+                        <option value="mse" selected="selected">Mean Squared Error</option>
+                        <option value="entropy">Mean Absolute Error</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Max Depth</td>
+                <td style="text-align: right">
+                    <input type="number" value="5" class="base-num-select" min="0" name="rfr_custom_depth" id="rfr_max_depth_custom" style="width: 80px; display: none;">
+                    <select class="base-select" name="rfr_max_depth" id="rfr_max_depth_select">
+                        <option value="none" selected="selected">Default</option>
+                        <option value="auto">Automatic</option>
+                        <option value="custom">Custom Depth</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <!-- K NEAREST NEIGHBORS CLASSIFIER !-->
+        <table class="hp-table" id="nearest_neighbors_classifier" style="display: none">
+            <tr>
+                <td>Number of Neighbors (k)</td>
+                <td style="text-align: right"><input type="number" value="5" class="base-num-select" min="0" name="nnc_k" style="width: 80px;"></td>
+            </tr>
+            <tr>
+                <td>Minkowski Power Parameter</td>
+                <td style="text-align: right"><input type="number" value="2" class="base-num-select" min="0" name="nnc_p" style="width: 80px;"></td>
+            </tr>
+            <tr>
+                <td>Algorithm</td>
+                <td style="text-align: right">
+                    <select class="base-select" name="nnc_algorithm">
+                        <option value="auto" selected="selected">Automatic</option>
+                        <option value="ball_tree">Ball Tree</option>
+                        <option value="kd_tree">k-d Tree</option>
+                        <option value="brute">Brute Force</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Weights</td>
+                <td style="text-align: right">
+                    <select class="base-select" name="nnc_weights">
+                        <option value="uniform" selected="selected">Uniform</option>
+                        <option value="distance">Distance</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <!-- K NEAREST NEIGHBORS REGRESSOR !-->
+        <table class="hp-table" id="nearest_neighbors_classifier" style="display: none">
+            <tr>
+                <td>Number of Neighbors (k)</td>
+                <td style="text-align: right"><input type="number" value="5" class="base-num-select" min="0" name="nnr_k" style="width: 80px;"></td>
+            </tr>
+            <tr>
+                <td>Minkowski Power Parameter</td>
+                <td style="text-align: right"><input type="number" value="2" class="base-num-select" min="0" name="nnr_p" style="width: 80px;"></td>
+            </tr>
+            <tr>
+                <td>Algorithm</td>
+                <td style="text-align: right">
+                    <select class="base-select" name="nnr_algorithm">
+                        <option value="auto" selected="selected">Automatic</option>
+                        <option value="ball_tree">Ball Tree</option>
+                        <option value="kd_tree">k-d Tree</option>
+                        <option value="brute">Brute Force</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Weights</td>
+                <td style="text-align: right">
+                    <select class="base-select" name="nnr_weights">
+                        <option value="uniform" selected="selected">Uniform</option>
+                        <option value="distance">Distance</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <!-- SUPPORT VECTOR MACHINE CLASSIFIER !-->
+        <table class="hp-table" id="svm_classifier" style="display: none">
+            <tr>
+                <td>Penalty Parameter C</td>
+                <td style="text-align: right"><input type="number" value="1" class="base-num-select" min="0" name="svc_C" style="width: 80px;"></td>
+            </tr>
+            <tr>
+                <td>Kernel</td>
+                <td style="text-align: right">
+                    <label for="svc_degree_number" style="display: none;" id="svc_degree_number_label">Degree:</label>
+                    <input type="number" value="3" class="base-num-select" min="0" name="svc_degree" id="svc_degree_number" style="width: 80px; display: none;">
+                    <select class="base-select" name="svc_kernel" id="svc_degree_select">
+                        <option value="rbf" selected="selected">Radial Basis Function</option>
+                        <option value="linear">Linear Function</option>
+                        <option value="poly">Polynomial Function</option>
+                        <option value="sigmoid">Sigmoid Function</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <!-- SUPPORT VECTOR MACHINE REGRESSOR !-->
+        <table class="hp-table" id="svm_regressor" style="display: none">
+            <tr>
+                <td>Kernel</td>
+                <td style="text-align: right">
+                    <label for="svr_degree_number" style="display: none;" id="svr_degree_number_label">Degree:</label>
+                    <input type="number" value="3" class="base-num-select" min="0" name="svr_degree" id="svr_degree_number" style="width: 80px; display: none;">
+                    <select class="base-select" name="svr_kernel" id="svr_degree_select">
+                        <option value="rbf" selected="selected">Radial Basis Function</option>
+                        <option value="linear">Linear Function</option>
+                        <option value="poly">Polynomial Function</option>
+                        <option value="sigmoid">Sigmoid Function</option>
+                    </select>
+                </td>
             </tr>
         </table>
         <hr>
@@ -136,12 +295,56 @@
 
 <script>
     $("#dtr_max_depth_select").change(function(){
-        var selection = $("#dtr_max_depth_select option:selected").text();
+        let selection = $("#dtr_max_depth_select option:selected").text();
         if (selection === 'Custom Depth') {
             $("#dtr_max_depth_custom").show();
         }
         else {
             $("#dtr_max_depth_custom").hide();
+        }
+    });
+
+    $("#rfc_max_depth_select").change(function(){
+        let selection = $("#rfc_max_depth_select option:selected").text();
+        if (selection === 'Custom Depth') {
+            $("#rfc_max_depth_custom").show();
+        }
+        else {
+            $("#rfc_max_depth_custom").hide();
+        }
+    });
+
+    $("#rfr_max_depth_select").change(function(){
+        let selection = $("#rfr_max_depth_select option:selected").text();
+        if (selection === 'Custom Depth') {
+            $("#rfr_max_depth_custom").show();
+        }
+        else {
+            $("#rfr_max_depth_custom").hide();
+        }
+    });
+
+    $("#svc_degree_select").change(function(){
+        let selection = $("#svc_degree_select option:selected").text();
+        if (selection === 'Polynomial Function') {
+            $("#svc_degree_number").show();
+            $("#svc_degree_number_label").show();
+        }
+        else {
+            $("#svc_degree_number").hide();
+            $("#svc_degree_number_label").hide();
+        }
+    });
+
+    $("#svr_degree_select").change(function(){
+        let selection = $("#svr_degree_select option:selected").text();
+        if (selection === 'Polynomial Function') {
+            $("#svr_degree_number").show();
+            $("#svr_degree_number_label").show();
+        }
+        else {
+            $("#svr_degree_number").hide();
+            $("#svr_degree_number_label").hide();
         }
     });
 
@@ -155,64 +358,71 @@
         var alg_type = $("#alg_select option:selected").text();
         var text = "";
         $("#hyperparameters").children().hide();
-        $("#tune_header").show();
         if (alg_type === 'Linear Regression') {
             $('#linear_regression').show();
+            $("#tune_header").show();
             text = 'Linear Regression is a method of modeling a linear relationship between dependent variables and independent variables.\n' +
                 'This model is used for predicting numerical values.';
         }
         else if (alg_type === 'Logistic Regression') {
             $('#logistic_regression').show();
+            $("#tune_header").show();
             text = 'Logistic Regression is a form of binomial regression used to classify samples from two different samples. When given more than two classes, this algorithm will default to softmax regression.\n' +
                 'This model is used for classifying samples.';
         }
         else if (alg_type === 'Linear Discriminant Analysis') {
             $('#linear_discriminant_analysis').show();
+            $("#tune_header").show();
             text = 'Linear Discriminant Analysis (LDA) is a linear classifier much like logistic regression, but with some key differences. LDA is preferred over binary logistic regression when all requirements are met.\n' +
                 'This model is used for classifying samples.';
         }
         else if (alg_type === 'Decision Tree Regressor') {
             $('#decision_tree_regressor').show();
+            $("#tune_header").show();
             text = 'Descision Tree learning uses a decision tree as a predictive model with conditionals.\n' +
                 'This model is used for predicting numerical values.';
         }
         else if (alg_type === 'Gaussian Naive Bayes') {
-            $('#hyperparameters').hide();
             text = 'Naive Bayes classifiers are simple probabilistic models for predicting class based on Bayes\' theorem with a strong assumed correlation between features. Gaussian Naive Bayes uses a Gaussian distribution.\n' +
                 'This model is used for classifying samples.';
         }
         else if (alg_type === 'Random Forest Classifier') {
-            $('#hyperparameters').hide();
+            $('#random_forest_classifier').show();
+            $("#tune_header").show();
             text = 'Random Forest algorithms construct many decision trees in order to combat overfitting. Random Forest Classifiers output the mode of the classes to make a categorical prediction.\n' +
                 'This model is used for classifying samples.';
         }
         else if (alg_type === 'Random Forest Regressor') {
-            $('#hyperparameters').hide();
+            $('#random_forest_regressor').show();
+            $("#tune_header").show();
             text = 'Random Forest algorithms construct many decision trees in order to combat overfitting. Random Forest Regressors output the mean of the classes to make a numerical prediction.\n' +
                 'This model is used for predicting numerical values.';
         }
         else if (alg_type === 'K Nearest Neighbors Classifier') {
-            $('#hyperparameters').hide();
+            $('#nearest_neighbors_classifier').show();
+            $("#tune_header").show();
             text = 'K-Nearest Neighbors is a simple machine learning algorithm that calculates the values of the nearest k neighbors of a datapoint. The predicted class is the mode of the values of its nearest k neighbors\n' +
                 'This model is used for classifying samples.';
         }
         else if (alg_type === 'K Nearest Neighbors Regressor') {
-            $('#hyperparameters').hide();
+            $('#nearest_neighbors_regressor').show();
+            $("#tune_header").show();
             text = 'K-Nearest Neighbors is a simple machine learning algorithm that calculates the values of the nearest k neighbors of a datapoint. The predicted class is the mean of the values of its nearest k neighbors\n' +
                 'This model is used for predicting numerical values.';
         }
         else if (alg_type === 'Support Vector Machine Classifier') {
-            $('#hyperparameters').hide();
+            $('#svm_classifier').show();
+            $("#tune_header").show();
             text = 'Support Vector Machine (SVM) models split the data into two distinct groups with as wide a gap as possible. They are most effective in a high-dimensional space.\n' +
                 'This model is used for classifying samples.';
         }
         else if (alg_type === 'Support Vector Machine Regressor') {
-            $('#hyperparameters').hide();
+            $('#svm_regressor').show();
+            $("#tune_header").show();
             text = 'Support Vector Machine (SVM) models split the data into two distinct groups with as wide a gap as possible. They are most effective in a high-dimensional space.\n' +
                 'This model is used for predicting numerical values.';
         }
         else if (alg_type === 'Nearest Centroid') {
-            $('#hyperparameters').hide();
             text = 'Nearest Centroid models assign the label of the training class with the mean closest to the observation.\n' +
                 'This model is used for classifying samples.';
         }

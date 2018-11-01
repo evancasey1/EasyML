@@ -182,13 +182,12 @@ def create_random_forest_regressor(input_df, target_df, parameters):
 
     n_est = 100
     r2_lst = []
-    depth_mul = 10
     depth_iter = 10
-    depth_start = 1.0 / (depth_mul ** (depth_iter / 2))
+    depth_start = 2
 
     depth_lst = []
     for i in range(depth_iter):
-        depth_lst.append(depth_start * (depth_mul ** i))
+        depth_lst.append(depth_start**i)
 
     # Select model with best r^2 and least depth
     for depth in depth_lst:
