@@ -43,9 +43,12 @@ def upload_csv(request, next=None):
     # if not GET, then proceed
     try:
         csv_file = request.FILES["csv_file"]
+        file_type = request.POST.get('file_type')
+        '''
         if not csv_file.name.endswith('.csv'):
             messages.error(request, 'File is not CSV type')
             return HttpResponseRedirect(reverse("upload_csv"))
+        '''
 
         # if file is too large, return
         if csv_file.multiple_chunks():
@@ -60,7 +63,13 @@ def upload_csv(request, next=None):
         csv_obj = CsvFile(raw_name=csv_file.name, display_name=csv_name, file_owner=user)
         csv_obj.save()
 
-        file_data = pd.read_csv(csv_file)
+        if file_type == 'comma':
+            file_data = pd.read_csv(csv_file)
+        elif file_type == 'tab':
+            file_data = pd.read_csv(csv_file, sep='\t')
+        else:
+            file_data = pd.read_excel(csv_file)
+
         columns = list(file_data.columns.values)
 
         csv_data = []
