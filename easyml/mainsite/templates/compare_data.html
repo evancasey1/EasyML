@@ -47,10 +47,8 @@
     $(document).ready(function(){
         select_1_val = $('#first_select').val();
         select_2_val = $('#second_select').val();
-
-        $("#second_select > option").each(function() {
-            all_vals.push($(this).val());
-        });
+        $("#second_select option[value='"+ select_1_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
+        //$("#first_select option[value='"+ select_2_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
 
         if (select_1_val === select_2_val) {
             $("#second_select > option").each(function() {
@@ -65,29 +63,12 @@
 
     $("#first_select").change(function(){
         select_1_val = $("#first_select").val();
-        if($(this).val() === select_2_val) {
-            for (let i = 0; i < all_vals.length; i++) {
-                console.log(all_vals[i]);
-                if (all_vals[i] !== select_1_val) {
-                    select_2_val = all_vals[i];
-                    $('#second_select').val(select_2_val);
-                    break;
-                }
-            }
-        }
+        $("#second_select option[value='"+ select_1_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
     });
 
      $("#second_select").change(function(){
         select_2_val = $("#second_select").val();
-        if($(this).val() === select_1_val) {
-            for (let i = 0; i < all_vals.length; i++) {
-                if (all_vals[i] !== select_2_val) {
-                    select_1_val = all_vals[i];
-                    $('#first_select').val(select_1_val);
-                    break;
-                }
-            }
-        }
+        $("#first_select option[value='"+ select_2_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
     });
 </script>
 {% endblock %}
