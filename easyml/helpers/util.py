@@ -71,9 +71,15 @@ def get_r2(y_pred, y_test):
 
 def get_match_acc(y_pred, y_test):
     n = len(y_test)
+    if n == 0:
+        return 0
+
     correct = 0
     for i in range(n):
         if y_pred[i] == y_test[i]:
             correct += 1
 
-    return round(correct / n, 4)
+    return round((correct / n) * 100.0, 4)
+
+def to_percent(val, n=4):
+    return round((val * 100), n)

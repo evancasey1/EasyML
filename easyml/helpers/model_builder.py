@@ -17,7 +17,7 @@ from sklearn.metrics import r2_score
 from .constants import COLUMN_TYPE, ALGORITHM, ALGORITHM_NAME_MAP
 from mainsite.models import CsvFile, CsvFileData, MLModel
 from .util import get_dataframe
-from .util import get_r2, get_match_acc
+from .util import get_r2, get_match_acc, to_percent
 
 
 def create_model(algorithm_type_num, file_id, parameters):
@@ -108,8 +108,8 @@ def create_linear_regression_model(input_df, target_df, parameters):
     lin_reg = LinearRegression(fit_intercept=fit_intercept, normalize=normalize)
 
     lin_reg_test = lin_reg.fit(x_train, y_train)
-    r2_score = get_r2(lin_reg_test.predict(x_test), y_test)
-    parameters['accuracy'] = r2_score
+    score = round(lin_reg_test.score(x_test, y_test), 4)
+    parameters['accuracy'] = score
     parameters['accuracy_type'] = 'R^2'
     lin_reg = lin_reg.fit(input_df, target_df)
 
@@ -148,7 +148,7 @@ def create_logistic_regression_model(input_df, target_df, parameters):
     clf_test = logreg.fit(x_train, y_train)
     acc = get_match_acc(clf_test.predict(x_test), y_test)
     parameters['accuracy'] = acc
-    parameters['accuracy_type'] = 'Accuracy'
+    parameters['accuracy_type'] = 'Accuracy [percent]'
 
     clf = logreg.fit(input_df, target_df)
     return clf
@@ -157,6 +157,13 @@ def create_logistic_regression_model(input_df, target_df, parameters):
 def create_linear_discriminant_analysis(input_df, target_df, parameters):
     solver = parameters.get('lda_solver', 'svd')
     clf = LinearDiscriminantAnalysis(solver=solver)
+
+    x_train, x_test, y_train, y_test = train_test_split(input_df, target_df)
+    clf_test = clf.fit(x_train, y_train)
+    acc = get_match_acc(clf_test.predict(x_test), y_test)
+    parameters['accuracy'] = acc
+    parameters['accuracy_type'] = 'Accuracy [percent]'
+
     clf.fit(input_df, target_df)
 
     return clf
@@ -166,6 +173,7 @@ def create_decision_tree_regressor(input_df, target_df, parameters):
     criterion = parameters.get('dtr_criterion', 'mse')
     presort = bool(parameters.get('dtr_presort', False))
     max_depth_choice = parameters.get('dtr_max_depth', 'none')
+    x_train, x_test, y_train, y_test = train_test_split(input_df, target_df)
 
     if max_depth_choice == 'none':
         best_depth = None
@@ -174,7 +182,6 @@ def create_decision_tree_regressor(input_df, target_df, parameters):
         best_depth = parameters.get('dtr_custom_depth', None)
 
     else:
-        x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
         r2_lst = []
         depth_iter = 5
         depth_start = 10
@@ -187,21 +194,35 @@ def create_decision_tree_regressor(input_df, target_df, parameters):
         for depth in depth_lst:
             dt_regr = DecisionTreeRegressor(max_depth=depth, presort=presort, criterion=criterion)
             dt_regr.fit(x_train, y_train)
-            r2_lst.append(dt_regr.score(x_valid, y_valid))
+            r2_lst.append(dt_regr.score(x_test, y_test))
 
         depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
         best_depth = depth_lst[depth_index]
 
-    dt_regr_final = DecisionTreeRegressor(max_depth=best_depth,
-                                          presort=presort,
-                                          criterion=criterion).fit(input_df, target_df)
-    return dt_regr_final
+    dt_regr = DecisionTreeRegressor(max_depth=best_depth,
+                                    presort=presort,
+                                    criterion=criterion)
+
+    regr_test = dt_regr.fit(x_train, y_train)
+    score = round(regr_test.score(x_test, y_test), 4)
+    parameters['accuracy'] = score
+    parameters['accuracy_type'] = 'R^2'
+
+    dt_regr.fit(input_df, target_df)
+
+    return dt_regr
 
 
 def create_gaussian_naive_bayes(input_df, target_df, parameters):
     gnb = GaussianNB()
-    gnb.fit(input_df, target_df)
 
+    x_train, x_test, y_train, y_test = train_test_split(input_df, target_df)
+    clf_test = gnb.fit(x_train, y_train)
+    acc = get_match_acc(clf_test.predict(x_test), y_test)
+    parameters['accuracy'] = acc
+    parameters['accuracy_type'] = 'Accuracy [percent]'
+
+    gnb.fit(input_df, target_df)
     return gnb
 
 
@@ -209,6 +230,7 @@ def create_random_forest_classifier(input_df, target_df, parameters):
     criterion = parameters.get('rfc_criterion', 'gini')
     n_estimators = int(parameters.get('rfc_n_estimators', 100))
     depth_select = parameters.get('rfc_max_depth', 'none')
+    x_train, x_test, y_train, y_test = train_test_split(input_df, target_df)
 
     if depth_select == 'none':
         best_depth = None
@@ -217,8 +239,6 @@ def create_random_forest_classifier(input_df, target_df, parameters):
         best_depth = parameters.get('rfc_custom_depth', None)
 
     else:
-        x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
-
         r2_lst = []
         depth_iter = 5
         depth_start = 10
@@ -241,7 +261,14 @@ def create_random_forest_classifier(input_df, target_df, parameters):
 
     rf_clf = RandomForestClassifier(n_estimators=n_estimators,
                                     max_depth=best_depth,
-                                    criterion=criterion).fit(input_df, target_df)
+                                    criterion=criterion)
+
+    clf_test = rf_clf.fit(x_train, y_train)
+    acc = get_match_acc(clf_test.predict(x_test), y_test)
+    parameters['accuracy'] = acc
+    parameters['accuracy_type'] = 'Accuracy'
+
+    rf_clf.fit(input_df, target_df)
     return rf_clf
 
 
@@ -249,6 +276,7 @@ def create_random_forest_regressor(input_df, target_df, parameters):
     criterion = parameters.get('rfc_criterion', 'mse')
     n_estimators = int(parameters.get('rfc_n_estimators', 100))
     depth_select = parameters.get('rfc_max_depth', 'none')
+    x_train, x_test, y_train, y_test = train_test_split(input_df, target_df)
 
     if depth_select == 'none':
         best_depth = None
@@ -257,8 +285,6 @@ def create_random_forest_regressor(input_df, target_df, parameters):
         best_depth = parameters.get('rfc_custom_depth', None)
 
     else:
-        x_train, x_valid, y_train, y_valid = train_test_split(input_df, target_df, test_size=0.20)
-
         r2_lst = []
         depth_iter = 5
         depth_start = 10
@@ -269,20 +295,28 @@ def create_random_forest_regressor(input_df, target_df, parameters):
 
         # Select model with best r^2 and least depth
         for depth in depth_lst:
-            rf_clf = RandomForestRegressor(n_estimators=n_estimators,
-                                           max_depth=depth,
-                                           criterion=criterion,
-                                           oob_score=True)
-            rf_clf.fit(x_train, y_train)
-            r2_lst.append(rf_clf.oob_score_)
+            rf_regr_test = RandomForestRegressor(n_estimators=n_estimators,
+                                                 max_depth=depth,
+                                                 criterion=criterion,
+                                                 oob_score=True)
+            rf_regr_test.fit(x_train, y_train)
+            r2_lst.append(rf_regr_test.oob_score_)
 
         depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))
         best_depth = depth_lst[depth_index]
 
-    rf_clf = RandomForestRegressor(n_estimators=n_estimators,
-                                   max_depth=best_depth,
-                                   criterion=criterion).fit(input_df, target_df)
-    return rf_clf
+    rf_regr = RandomForestRegressor(n_estimators=n_estimators,
+                                    max_depth=best_depth,
+                                    criterion=criterion)
+
+    regr_test = rf_regr.fit(x_train, y_train)
+    score = round(regr_test.score(x_test, y_test), 4)
+    parameters['accuracy'] = score
+    parameters['accuracy_type'] = 'R^2'
+
+    rf_regr.fit(input_df, target_df)
+
+    return rf_regr
 
 
 def create_k_nearest_neighbors_classifier(input_df, target_df, parameters):
@@ -295,6 +329,13 @@ def create_k_nearest_neighbors_classifier(input_df, target_df, parameters):
                                      algorithm=algorithm,
                                      weights=weights,
                                      p=p)
+
+    x_train, x_test, y_train, y_test = train_test_split(input_df, target_df)
+    clf_test = neighbors.fit(x_train, y_train)
+    acc = get_match_acc(clf_test.predict(x_test), y_test)
+    parameters['accuracy'] = acc
+    parameters['accuracy_type'] = 'Accuracy [percent]'
+
     neighbors.fit(input_df, target_df)
 
     return neighbors
@@ -305,11 +346,18 @@ def create_k_nearest_neighbors_regressor(input_df, target_df, parameters):
     weights = parameters.get('weights', 'uniform')
     algorithm = parameters.get('algorithm', 'auto')
     p = int(parameters.get('nnc_p', 2))
+    x_train, x_test, y_train, y_test = train_test_split(input_df, target_df)
 
     neighbors = KNeighborsRegressor(n_neighbors=n_neighbors,
                                     algorithm=algorithm,
                                     weights=weights,
                                     p=p)
+
+    regr_test = neighbors.fit(x_train, y_train)
+    score = round(regr_test.score(x_test, y_test), 4)
+    parameters['accuracy'] = score
+    parameters['accuracy_type'] = 'R^2'
+
     neighbors.fit(input_df, target_df)
 
     return neighbors
@@ -317,6 +365,13 @@ def create_k_nearest_neighbors_regressor(input_df, target_df, parameters):
 
 def create_nearest_centroid(input_df, target_df, parameters):
     clf = NearestCentroid()
+
+    x_train, x_test, y_train, y_test = train_test_split(input_df, target_df)
+    clf_test = clf.fit(x_train, y_train)
+    acc = get_match_acc(clf_test.predict(x_test), y_test)
+    parameters['accuracy'] = acc
+    parameters['accuracy_type'] = 'Accuracy [percent]'
+
     clf.fit(input_df, target_df)
 
     return clf
@@ -328,6 +383,13 @@ def create_support_vector_machine_classifier(input_df, target_df, parameters):
     c = parameters.get('svc_C', 1.0)
 
     clf = svm.SVC(kernel=kernel, degree=degree, C=c)
+
+    x_train, x_test, y_train, y_test = train_test_split(input_df, target_df)
+    clf_test = clf.fit(x_train, y_train)
+    acc = get_match_acc(clf_test.predict(x_test), y_test)
+    parameters['accuracy'] = acc
+    parameters['accuracy_type'] = 'Accuracy [percent]'
+
     clf.fit(input_df, target_df)
 
     return clf
@@ -337,8 +399,15 @@ def create_support_vector_machine_regressor(input_df, target_df, parameters):
     kernel = parameters.get('svr_kernel', 'rbf')
     degree = int(parameters.get('svr_degree', 3))
 
-    clf = svm.SVR(kernel=kernel, degree=degree)
-    clf.fit(input_df, target_df)
+    svm_reg = svm.SVR(kernel=kernel, degree=degree)
 
-    return clf
+    x_train, x_test, y_train, y_test = train_test_split(input_df, target_df)
+    regr_test = svm_reg.fit(x_train, y_train)
+    score = round(regr_test.score(x_test, y_test), 4)
+    parameters['accuracy'] = score
+    parameters['accuracy_type'] = 'R^2'
+
+    svm_reg.fit(input_df, target_df)
+
+    return svm_reg
 
