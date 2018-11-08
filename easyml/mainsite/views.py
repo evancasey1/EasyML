@@ -44,11 +44,6 @@ def upload_csv(request, next=None):
     try:
         csv_file = request.FILES["csv_file"]
         file_type = request.POST.get('file_type')
-        '''
-        if not csv_file.name.endswith('.csv'):
-            messages.error(request, 'File is not CSV type')
-            return HttpResponseRedirect(reverse("upload_csv"))
-        '''
 
         # if file is too large, return
         if csv_file.multiple_chunks():

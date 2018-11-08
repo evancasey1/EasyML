@@ -12,9 +12,12 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.naive_bayes import GaussianNB
 from sklearn import svm
 
+from sklearn.metrics import r2_score
+
 from .constants import COLUMN_TYPE, ALGORITHM, ALGORITHM_NAME_MAP
 from mainsite.models import CsvFile, CsvFileData, MLModel
 from .util import get_dataframe
+from .util import get_r2, get_match_acc
 
 
 def create_model(algorithm_type_num, file_id, parameters):
@@ -92,6 +95,8 @@ def save_model(model, alg_type, algorithm_type_num, file_id, parameters):
     model_obj.display_name = display_name
     model_obj.parameters = json.dumps(parameters)
     model_obj.parent_file = CsvFile.objects.get(id=file_id)
+    model_obj.accuracy = parameters.get('accuracy')
+    model_obj.accuracy_type = parameters.get('accuracy_type')
     model_obj.save()
 
 
@@ -99,7 +104,13 @@ def create_linear_regression_model(input_df, target_df, parameters):
     fit_intercept = bool(parameters.get('linreg_fit_intercept', False))
     normalize = bool(parameters.get('linreg_normalize', False))
 
+    x_train, x_test, y_train, y_test = train_test_split(input_df, target_df)
     lin_reg = LinearRegression(fit_intercept=fit_intercept, normalize=normalize)
+
+    lin_reg_test = lin_reg.fit(x_train, y_train)
+    r2_score = get_r2(lin_reg_test.predict(x_test), y_test)
+    parameters['accuracy'] = r2_score
+    parameters['accuracy_type'] = 'R^2'
     lin_reg = lin_reg.fit(input_df, target_df)
 
     return lin_reg
@@ -110,23 +121,34 @@ def create_logistic_regression_model(input_df, target_df, parameters):
     logreg_c_select = parameters.get('logreg_C_select', 'custom')
     logreg_fit_intercept = bool(parameters.get('logreg_fit_intercept', False))
 
+    if logreg_penalty == 'l1':
+        solver = 'liblinear'
+    else:
+        solver = 'lbfgs'
+
     if logreg_c_select == 'custom':
         logreg_c = int(parameters.get('logreg_C', 1.0))
         logreg = LogisticRegression(C=logreg_c,
                                     penalty=logreg_penalty,
                                     fit_intercept=logreg_fit_intercept,
-                                    solver='lbfgs')
+                                    solver=solver)
 
     else:
         steps = [('std_scaler', StandardScaler())]
         steps += [('log_regression', LogisticRegression(penalty=logreg_penalty,
                                                         multi_class='auto',
                                                         fit_intercept=logreg_fit_intercept,
-                                                        solver='lbfgs'))]
+                                                        solver=solver))]
         pipe = Pipeline(steps)
 
-        parameters = {'log_regression__C': [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000]}
-        logreg = GridSearchCV(estimator=pipe, param_grid=parameters, cv=5)
+        param_grid = {'log_regression__C': [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000]}
+        logreg = GridSearchCV(estimator=pipe, param_grid=param_grid, cv=5)
+
+    x_train, x_test, y_train, y_test = train_test_split(input_df, target_df)
+    clf_test = logreg.fit(x_train, y_train)
+    acc = get_match_acc(clf_test.predict(x_test), y_test)
+    parameters['accuracy'] = acc
+    parameters['accuracy_type'] = 'Accuracy'
 
     clf = logreg.fit(input_df, target_df)
     return clf
@@ -211,7 +233,7 @@ def create_random_forest_classifier(input_df, target_df, parameters):
                                             max_depth=depth,
                                             criterion=criterion,
                                             oob_score=True)
-            rf_clf.fit(x_train, y_train.values.ravel())
+            rf_clf.fit(x_train, y_train)
             r2_lst.append(rf_clf.oob_score_)
 
         depth_index, r2 = min(enumerate(r2_lst), key=lambda x: abs(x[1] - 1))

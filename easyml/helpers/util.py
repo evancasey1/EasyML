@@ -57,3 +57,23 @@ def get_alg_lst():
         })
 
     return sorted(alg_lst, key=itemgetter('num'))
+
+def get_r2(y_pred, y_test):
+    n = len(y_test)
+    y_bar = sum(y_test) / n
+    ss_tot = 0
+    ss_res = 0
+    for i in range(n):
+        ss_tot += (y_test[i] - y_bar)**2
+        ss_res += (y_test[i] - y_pred[i])**2
+
+    return round(1 - (ss_res/ss_tot), 4)
+
+def get_match_acc(y_pred, y_test):
+    n = len(y_test)
+    correct = 0
+    for i in range(n):
+        if y_pred[i] == y_test[i]:
+            correct += 1
+
+    return round(correct / n, 4)

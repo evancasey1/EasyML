@@ -51,3 +51,5 @@ class MLModel(models.Model):
     name = models.CharField(max_length=255)
     display_name = models.CharField(max_length=255)
     parameters = models.TextField(blank=False, null=False)
+    accuracy = models.FloatField(null=True, blank=True)
+    accuracy_type = models.CharField(max_length=255, null=True, blank=True)
