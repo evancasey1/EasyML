@@ -148,7 +148,7 @@ def create_logistic_regression_model(input_df, target_df, parameters):
     clf_test = logreg.fit(x_train, y_train)
     acc = get_match_acc(clf_test.predict(x_test), y_test)
     parameters['accuracy'] = acc
-    parameters['accuracy_type'] = 'Accuracy [percent]'
+    parameters['accuracy_type'] = 'Accuracy [%]'
 
     clf = logreg.fit(input_df, target_df)
     return clf
@@ -162,7 +162,7 @@ def create_linear_discriminant_analysis(input_df, target_df, parameters):
     clf_test = clf.fit(x_train, y_train)
     acc = get_match_acc(clf_test.predict(x_test), y_test)
     parameters['accuracy'] = acc
-    parameters['accuracy_type'] = 'Accuracy [percent]'
+    parameters['accuracy_type'] = 'Accuracy [%]'
 
     clf.fit(input_df, target_df)
 
@@ -220,7 +220,7 @@ def create_gaussian_naive_bayes(input_df, target_df, parameters):
     clf_test = gnb.fit(x_train, y_train)
     acc = get_match_acc(clf_test.predict(x_test), y_test)
     parameters['accuracy'] = acc
-    parameters['accuracy_type'] = 'Accuracy [percent]'
+    parameters['accuracy_type'] = 'Accuracy [%]'
 
     gnb.fit(input_df, target_df)
     return gnb
@@ -266,7 +266,7 @@ def create_random_forest_classifier(input_df, target_df, parameters):
     clf_test = rf_clf.fit(x_train, y_train)
     acc = get_match_acc(clf_test.predict(x_test), y_test)
     parameters['accuracy'] = acc
-    parameters['accuracy_type'] = 'Accuracy'
+    parameters['accuracy_type'] = 'Accuracy [%]'
 
     rf_clf.fit(input_df, target_df)
     return rf_clf
@@ -334,7 +334,7 @@ def create_k_nearest_neighbors_classifier(input_df, target_df, parameters):
     clf_test = neighbors.fit(x_train, y_train)
     acc = get_match_acc(clf_test.predict(x_test), y_test)
     parameters['accuracy'] = acc
-    parameters['accuracy_type'] = 'Accuracy [percent]'
+    parameters['accuracy_type'] = 'Accuracy [%]'
 
     neighbors.fit(input_df, target_df)
 
@@ -370,7 +370,7 @@ def create_nearest_centroid(input_df, target_df, parameters):
     clf_test = clf.fit(x_train, y_train)
     acc = get_match_acc(clf_test.predict(x_test), y_test)
     parameters['accuracy'] = acc
-    parameters['accuracy_type'] = 'Accuracy [percent]'
+    parameters['accuracy_type'] = 'Accuracy [%]'
 
     clf.fit(input_df, target_df)
 
@@ -388,7 +388,7 @@ def create_support_vector_machine_classifier(input_df, target_df, parameters):
     clf_test = clf.fit(x_train, y_train)
     acc = get_match_acc(clf_test.predict(x_test), y_test)
     parameters['accuracy'] = acc
-    parameters['accuracy_type'] = 'Accuracy [percent]'
+    parameters['accuracy_type'] = 'Accuracy [%]'
 
     clf.fit(input_df, target_df)
 

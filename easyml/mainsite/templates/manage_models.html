@@ -18,6 +18,7 @@
                         {% csrf_token %}
                             <input type="text" name="model_id" value="{{ model.id }}" hidden>
                             <td><input style="width:90%" type="text" name="display_name" value="{{ model.display_name }}"></td>
+                            <td><p>{{ model.accuracy_type }} : {{ model.accuracy }}</p></td>
                             <td><a class="btn btn-danger" href="{% url 'delete_model' model.id %}">Delete</a></td>
                             <td><input class="btn btn-primary" type="submit" value="Rename"></td>
                         </form>

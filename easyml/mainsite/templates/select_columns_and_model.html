@@ -34,7 +34,7 @@
     <h4>Select Model: </h4>
     <select class="align-r custom-select" name="model_select">
         {% for model in valid_models %}
-            <option value="{{ model.id }}">{{ model.display_name }}</option>
+            <option value="{{ model.id }}">{{ model.display_name }}  ({{ model.accuracy_type }} : {{ model.accuracy }})</option>
         {% endfor %}
     </select>
     <br>
