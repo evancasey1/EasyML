@@ -306,11 +306,18 @@ def select_model(request):
 
     return render(request, 'select_model.html', context=context)
 
+def select_compare(request):
+    valid_files = get_user_files(request.user)
+    context = {
+        'valid_files': valid_files
+    }
+
+    return render(request, 'compare_data.html', context=context)
+
 def run_model(request):
     if request.method == 'GET':
         select_model(request)
 
-    context = {}
     file_id = int(request.POST.get('file_id'))
     model_id = request.POST.get('model_select')
 

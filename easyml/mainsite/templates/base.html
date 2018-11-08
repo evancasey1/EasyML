@@ -34,10 +34,11 @@
                 <a href="{% url 'home' %}" class="fa fa-home">  Home</a>
                 <a href="/easyml/train/setup/select-csv/train" class="fa fa-line-chart">  Train Model</a>
                 <a href="/easyml/predict/setup/select-csv/predict" class="fa fa-bar-chart">  Use Model</a>
+                <a href="/easyml/compare/setup" class="fa fa-check">  Compare Data</a>
                 <a href="{% url 'upload_csv' %}" class="fa fa-upload">  Upload Data</a>
                 <a href="{% url 'manage_models' %}" class="fa fa-pencil">  Manage Models</a>
                 <a href="{% url 'manage_data' %}" class="fa fa-database">  Manage Data</a>
-                <a href="{% url 'logout' %}" class="fa fa-sign-out">Log out</a>
+                <a href="{% url 'logout' %}" class="fa fa-sign-out">  Log out</a>
             </div>
         {% endif %}
     {% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Compare Data</title>
+</head>
+<body>
+<div class="main">
+    <p class="page-header">Compare Data</p>
+
+    <h3>Compare</h3>
+    <table class="table-responsive">
+        <tr>
+        <td>
+            <div id="compare_1">
+                <select class="base-select" id="first_select">
+                    {% for file in valid_files %}
+                        <option id="1:{{ file.id }}" value="{{ file.id }}">{{ file.display_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </td>
+        <td>
+            to
+        </td>
+        <td>
+            <div id="compare_2">
+                <select class="base-select" id="second_select">
+                    {% for file in valid_files %}
+                        <option id="2:{{ file.id }}" value="{{ file.id }}">{{ file.display_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </td>
+        </tr>
+    </table>
+</div>
+</body>
+
+<script>
+    var select_1_val = undefined;
+    var select_2_val = undefined;
+    var all_vals = [];
+
+    $(document).ready(function(){
+        select_1_val = $('#first_select').val();
+        select_2_val = $('#second_select').val();
+
+        $("#second_select > option").each(function() {
+            all_vals.push($(this).val());
+        });
+
+        if (select_1_val === select_2_val) {
+            $("#second_select > option").each(function() {
+                if ($(this).val() !== select_1_val) {
+                    select_2_val = $(this).val();
+                    $('#second_select').val(select_2_val);
+                    return false;
+                }
+            });
+        }
+    });
+
+    $("#first_select").change(function(){
+        select_1_val = $("#first_select").val();
+        if($(this).val() === select_2_val) {
+            for (let i = 0; i < all_vals.length; i++) {
+                console.log(all_vals[i]);
+                if (all_vals[i] !== select_1_val) {
+                    select_2_val = all_vals[i];
+                    $('#second_select').val(select_2_val);
+                    break;
+                }
+            }
+        }
+    });
+
+     $("#second_select").change(function(){
+        select_2_val = $("#second_select").val();
+        if($(this).val() === select_1_val) {
+            for (let i = 0; i < all_vals.length; i++) {
+                if (all_vals[i] !== select_2_val) {
+                    select_1_val = all_vals[i];
+                    $('#first_select').val(select_1_val);
+                    break;
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
