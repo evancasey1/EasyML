@@ -81,11 +81,13 @@ def create_model(algorithm_type_num, file_id, parameters):
 
 def save_model(model, alg_type, algorithm_type_num, file_id, parameters):
     parent_file = CsvFile.objects.get(id=file_id)
-    display_name = "{}: {}".format(parent_file.display_name, alg_type)
+    display_name = "{}_{}".format(parent_file.display_name, alg_type)
 
     same_name_count = MLModel.objects.filter(name=parent_file.display_name, type=alg_type).count()
     if same_name_count > 0:
         display_name += ' ({})'.format(same_name_count)
+
+    display_name = display_name.replace(' ', '_')
 
     model_obj = MLModel()
     model_obj.type = alg_type

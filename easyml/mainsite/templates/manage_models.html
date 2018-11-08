@@ -12,15 +12,25 @@
     <ul>
         {% if valid_models %}
             <table class="select-table table-striped center">
+                <tr>
+                    <td><strong>Filename</strong></td>
+                    <td><strong>Accuracy Metric</strong></td>
+                    <td><strong>Accuracy</strong></td>
+                    <td><strong>Created</strong></td>
+                    <td></td>
+                    <td></td>
+                </tr>
                 {% for model in valid_models %}
                     <tr>
                         <form action="rename-model/" method="post">
                         {% csrf_token %}
                             <input type="text" name="model_id" value="{{ model.id }}" hidden>
-                            <td><input style="width:90%" type="text" name="display_name" value="{{ model.display_name }}"></td>
-                            <td><p>{{ model.accuracy_type }} : {{ model.accuracy }}</p></td>
-                            <td><a class="btn btn-danger" href="{% url 'delete_model' model.id %}">Delete</a></td>
+                            <td><input style="width:90%" type="text" name="display_name" id="name_text" value="{{ model.display_name }}"></td>
+                            <td><p>{{ model.accuracy_type }}</p></td>
+                            <td><p>{{ model.accuracy }}</p></td>
+                            <td><p>{{ model.created_at }}</p></td>
                             <td><input class="btn btn-primary" type="submit" value="Rename"></td>
+                            <td><a class="btn btn-danger" href="{% url 'delete_model' model.id %}">Delete</a></td>
                         </form>
                     </tr>
                 {% endfor %}
