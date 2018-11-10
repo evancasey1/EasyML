@@ -343,6 +343,9 @@ def compare_files(request):
         .values_list('data', flat=True)
 
     if len(first_data) != len(second_data):
+        if len(second_data) == 0:
+            fname = CsvFile.objects.get(id=sfid).display_name
+            messages.error(request, 'Header "{}" does not exist in file "{}"'.format(header, fname))
         messages.error(request, 'Length of the two files is not identical. {} vs {} rows.'
                        .format(len(first_data), len(second_data)))
         return render(request, 'compare_data.html', context=context)
