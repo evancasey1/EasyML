@@ -10,7 +10,7 @@
 <div class="main">
     <p class="page-header">Compare Data</p>
 
-    <h3>Compare</h3>
+    <h3>Compare Files</h3>
     <table class="table-responsive">
         <tr>
         <td>
@@ -36,19 +36,19 @@
         </td>
         </tr>
     </table>
+
 </div>
 </body>
 
 <script>
     var select_1_val = undefined;
     var select_2_val = undefined;
-    var all_vals = [];
+    var select_1_cols;
 
     $(document).ready(function(){
         select_1_val = $('#first_select').val();
         select_2_val = $('#second_select').val();
         $("#second_select option[value='"+ select_1_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
-        //$("#first_select option[value='"+ select_2_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
 
         if (select_1_val === select_2_val) {
             $("#second_select > option").each(function() {
@@ -59,11 +59,15 @@
                 }
             });
         }
+        $("#first_select option[value='"+ select_2_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
     });
 
     $("#first_select").change(function(){
+        select_1_cols = [];
         select_1_val = $("#first_select").val();
         $("#second_select option[value='"+ select_1_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
+
+
     });
 
      $("#second_select").change(function(){

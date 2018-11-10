@@ -18,10 +18,13 @@ from django.urls import include, path
 from django.views.generic.base import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
     path('easyml/', TemplateView.as_view(template_name='home.html'), name='home'),
     path('admin/', admin.site.urls),
     path('easyml/', include('mainsite.urls')),
     path('easyml/', include('django.contrib.auth.urls')),
+    path('restapi/', include('restapi.urls')),
+    path('docs/', include_docs_urls(title='EasyML API')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
