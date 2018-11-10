@@ -7,10 +7,10 @@
     <title>Compare Data</title>
 </head>
 <body>
+<div id="alert_placeholder"></div>
 <div class="main">
     <p class="page-header">Compare Data</p>
-    <form action='/easyml/compare/compare-files' method='get'>
-    {% csrf_token %}
+    <!--<form action='/easyml/compare/compare-files' method='get'>!-->
         <h3>Files to Compare</h3>
         <table class="table-responsive">
             <tr>
@@ -45,46 +45,75 @@
         <hr>
         <h3>Method</h3>
         <div id="method_div">
-            <select class="base-select" name="method">
+            <select class="base-select" name="method" id="method_select">
                 <option id="Accuracy" selected>Accuracy [classification]</option>
                 <option id="Correlation">Correlation [regression]</option>
             </select>
         </div>
-        {% if accuracy and accuracy_type %}
-            <hr>
-            <h3>{{ method_sm }}</h3>
-            <div id="accuracy_div">
-                {{ accuracy_type }}: {{ accuracy }}<br>
-                Samples: {{ num_rows }}
-            </div>
-        {% endif %}
+        <div id="acc_div"></div>
         <hr>
-        <input class="btn btn-primary" type="submit" value="Submit">
-    </form>
+        <!--<input class="btn btn-primary" type="submit" value="Submit">!-->
+        <input class="btn btn-primary" type="button" id="submit_btn" value="Submit" onclick="getAccuracy()">
+    <!--</form>!-->
 </div>
 </body>
 
 <script>
-    var BASE_URL = '/restapi/get_file_headers/';
+    var HEADER_BASE_URL = '/restapi/get_file_headers/';
+    var ACC_BASE_URL = '/restapi/get_accuracy/';
     var select_1_val = undefined;
     var select_2_val = undefined;
     var select_1_cols;
 
-    $(document).ready(function(){
-        let f1_name = "{{ f1_name | safe }}";
-        let f2_name = "{{ f2_name | safe }}";
-        let ffid = "{{ ffid | safe }}";
-        let sfid = "{{ sfid | safe}}";
-        let method = "{{ method | safe }}";
-        let header = "{{ header | safe }}";
+    function getAccuracy() {
+        let ffid = select_1_val;
+        let sfid = select_2_val;
+        let header = $('#header_select').val();
+        let method = $('#method_select').val();
 
-        if (!(ffid === '' && sfid === '' && method === '' && header === '')) {
-            $("#first_select").val(parseInt(ffid));
-            $("#second_select").val(parseInt(sfid));
-            $("#header_select").val(header);
+        function showalert(message) {
 
+            $('#alert_placeholder').append('<div id="alertdiv" class="alert alert-danger alert-dismissible"><button type="close" class="close" data-dismiss="alert">×</button><span>'+message+'</span></div>')
+
+            setTimeout(function() { // this will automatically close the alert and remove this if the users doesnt close it in 5 secs
+                $("#alertdiv").slideUp(200, function() {
+                    $(this).alert('close');
+                });
+            }, 5000);
         }
 
+        let api_url = ACC_BASE_URL + ffid + '&' + sfid + '&' + header + '&' + method;
+        $.ajax({
+            type: 'GET',
+            url: api_url,
+            success: function (res) {
+                console.log(res);
+                if (res.status_code !== 200) {
+                    res.messages.forEach(element => {
+                        showalert(element);
+                    });
+                }
+                else {
+                    let method_sm = res.method_sm;
+                    let accuracy = res.accuracy;
+                    let accuracy_type = res.accuracy_type;
+                    let num_rows = res.num_rows;
+                    if (accuracy && accuracy_type && method_sm && num_rows) {
+                        let html_str = "<hr>";
+                        html_str += "<h3>" + method_sm + "</h3>";
+                        html_str += accuracy_type + ": " + accuracy + "<br>";
+                        html_str += "Samples: " + num_rows;
+                        $('#acc_div').html(html_str);
+                    }
+                }
+            },
+            error: function (error) {
+                callbackErr(error, self)
+            }
+        });
+    }
+
+    $(document).ready(function(){
         select_1_val = $('#first_select').val();
         select_2_val = $('#second_select').val();
         $("#second_select option[value='"+ select_1_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
@@ -99,16 +128,11 @@
             });
         }
 
-        $.get(BASE_URL + select_1_val, function(response){
+        $.get(HEADER_BASE_URL + select_1_val, function(response){
             var selectList = "Column: <select name='header' id='header_select' class='base-select'>";
             let headers = response.headers;
             $(headers).each(function(){
-                if (this == header) {
-                    selectList += "<option value='" + this + "' selected='selected'>" + this + "</option>";
-                }
-                else {
-                    selectList += "<option value='" + this + "'>" + this + "</option>";
-                }
+                selectList += "<option value='" + this + "'>" + this + "</option>";
             });
             selectList += "</select>";
             $('#head_select_div').html(selectList);
@@ -130,18 +154,12 @@
             });
         }
 
-        $.get(BASE_URL + select_1_val, function(response){
+        $.get(HEADER_BASE_URL + select_1_val, function(response){
             var selectList = "Column: <select name='header' id='header_select' class='base-select'>";
 
             let headers = response.headers;
             $(headers).each(function(){
-                console.log("this: " + this + "| header: " + header);
-                if (this == header) {
-                    selectList += "<option value='" + this + "' selected>" + this + "</option>";
-                }
-                else {
-                    selectList += "<option value='" + this + "'>" + this + "</option>";
-                }
+                selectList += "<option value='" + this + "'>" + this + "</option>";
             });
             selectList += "</select>";
             $('#head_select_div').html(selectList);
