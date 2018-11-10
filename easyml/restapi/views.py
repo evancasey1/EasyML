@@ -28,9 +28,10 @@ class GetFileHeaders(BaseUserView):
         if file_obj.file_owner != request.user:
             raise HttpResponseForbidden
 
-        headers = list(CsvFileData.objects.filter(parent_file_id=file_id)
-                       .values_list('column_header', flat=True).distinct())
+        data_raw = CsvFileData.objects.filter(parent_file_id=file_id)\
+            .values_list('column_header', flat=True)\
+            .distinct()
 
-        header_data = {'headers': headers}
+        header_data = {'headers': list(data_raw)}
 
         return JsonResponse(header_data)

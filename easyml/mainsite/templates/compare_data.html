@@ -10,7 +10,7 @@
 <div class="main">
     <p class="page-header">Compare Data</p>
 
-    <h3>Compare Files</h3>
+    <h3>Files to Compare</h3>
     <table class="table-responsive">
         <tr>
         <td>
@@ -36,11 +36,15 @@
         </td>
         </tr>
     </table>
+    <br>
+    <h3>Column to Compare</h3>
+    <div id="head_select_div"></div>
 
 </div>
 </body>
 
 <script>
+    var BASE_URL = '/restapi/get_file_headers/';
     var select_1_val = undefined;
     var select_2_val = undefined;
     var select_1_cols;
@@ -59,7 +63,18 @@
                 }
             });
         }
-        $("#first_select option[value='"+ select_2_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
+        //$("#first_select option[value='"+ select_2_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
+
+        $.get(BASE_URL + select_1_val, function(response){
+            var selectList = "Column: <select name='header_select' class='base-select'>";
+
+            let headers = response.headers;
+            $(headers).each(function(){
+                selectList += "<option>" + this + "</option>";
+            });
+            selectList += "</select>";
+            $('#head_select_div').html(selectList);
+        });
     });
 
     $("#first_select").change(function(){
@@ -67,12 +82,31 @@
         select_1_val = $("#first_select").val();
         $("#second_select option[value='"+ select_1_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
 
+        if (select_1_val === select_2_val) {
+            $("#second_select > option").each(function() {
+                if ($(this).val() !== select_1_val) {
+                    select_2_val = $(this).val();
+                    $('#second_select').val(select_2_val);
+                    return false;
+                }
+            });
+        }
 
+        $.get(BASE_URL + select_1_val, function(response){
+            var selectList = "Column: <select name='header_select' class='base-select'>";
+
+            let headers = response.headers;
+            $(headers).each(function(){
+                selectList += "<option>" + this + "</option>";
+            });
+            selectList += "</select>";
+            $('#head_select_div').html(selectList);
+        });
     });
 
      $("#second_select").change(function(){
         select_2_val = $("#second_select").val();
-        $("#first_select option[value='"+ select_2_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
+        //$("#first_select option[value='"+ select_2_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
     });
 </script>
 {% endblock %}
