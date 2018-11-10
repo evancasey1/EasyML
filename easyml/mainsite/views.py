@@ -314,6 +314,56 @@ def select_compare(request):
 
     return render(request, 'compare_data.html', context=context)
 
+def compare_files(request):
+    first_file_id = request.GET.get('first_file')
+    second_file_id = request.GET.get('second_file')
+    method = request.GET.get('method')
+    header = request.GET.get('header')
+
+    valid_files = get_user_files(request.user)
+    context = {
+        'valid_files': valid_files,
+    }
+
+    if not (first_file_id and second_file_id and header and method):
+        messages.error(request, 'Missing required argument.')
+        return render(request, 'compare_data.html', context=context)
+
+    ffid = int(first_file_id)
+    sfid = int(second_file_id)
+
+    first_data = CsvFileData.objects.filter(parent_file_id=ffid,
+                                            column_header=header) \
+        .order_by('row_num') \
+        .values_list('data', flat=True)
+
+    second_data = CsvFileData.objects.filter(parent_file_id=sfid,
+                                             column_header=header) \
+        .order_by('row_num') \
+        .values_list('data', flat=True)
+
+    if len(first_data) != len(second_data):
+        messages.error(request, 'Length of the two files is not identical. {} vs {} rows.'
+                       .format(len(first_data), len(second_data)))
+        return render(request, 'compare_data.html', context=context)
+
+    if 'accuracy' in method.lower():
+        acc = get_match_acc(first_data, second_data)
+        accuracy_type = 'Accuracy [%]'
+        method_sm = 'Accuracy'
+    else:
+        acc = get_r2(first_data, second_data)
+        accuracy_type = 'R^2'
+        method_sm = 'Correlation'
+
+    context['accuracy'] = acc
+    context['accuracy_type'] = accuracy_type
+    context['method'] = method_sm
+    context['header'] = header
+    context['num_rows'] = len(first_data)
+
+    return render(request, 'compare_data.html', context=context)
+
 def run_model(request):
     if request.method == 'GET':
         select_model(request)

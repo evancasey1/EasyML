@@ -32,6 +32,6 @@ class GetFileHeaders(BaseUserView):
             .values_list('column_header', flat=True)\
             .distinct()
 
-        header_data = {'headers': list(data_raw)}
+        header_data = {'headers': sorted(list(data_raw))}
 
         return JsonResponse(header_data)

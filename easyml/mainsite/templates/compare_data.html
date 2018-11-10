@@ -9,37 +9,58 @@
 <body>
 <div class="main">
     <p class="page-header">Compare Data</p>
-
-    <h3>Files to Compare</h3>
-    <table class="table-responsive">
-        <tr>
-        <td>
-            <div id="compare_1">
-                <select class="base-select" id="first_select">
-                    {% for file in valid_files %}
-                        <option id="1:{{ file.id }}" value="{{ file.id }}">{{ file.display_name }}</option>
-                    {% endfor %}
-                </select>
+    <form action='/easyml/compare/compare-files' method='get'>
+    {% csrf_token %}
+        <h3>Files to Compare</h3>
+        <table class="table-responsive">
+            <tr>
+            <td>
+                <div id="compare_1">
+                    <select class="base-select" id="first_select" name="first_file">
+                        {% for file in valid_files %}
+                            <option id="1:{{ file.id }}" value="{{ file.id }}">{{ file.display_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </td>
+            <td>
+                to
+            </td>
+            <td>
+                <div id="compare_2">
+                    <select class="base-select" id="second_select" name="second_file">
+                        {% for file in valid_files %}
+                            <option id="2:{{ file.id }}" value="{{ file.id }}">{{ file.display_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </td>
+            </tr>
+        </table>
+        <hr>
+        <h3>Column to Compare</h3>
+        <div id="head_select_div">
+            Column: <select class="base-select"></select>
+        </div>
+        <hr>
+        <h3>Method</h3>
+        <div id="method_div">
+            <select class="base-select" name="method">
+                <option id="accuracy" selected>Accuracy [classification]</option>
+                <option id="correlation">Correlation [regression]</option>
+            </select>
+        </div>
+        {% if accuracy and accuracy_type %}
+            <hr>
+            <h3>{{ method }}</h3>
+            <div id="accuracy_div">
+                {{ accuracy_type }}: {{ accuracy }}<br>
+                Samples: {{ num_rows }}
             </div>
-        </td>
-        <td>
-            to
-        </td>
-        <td>
-            <div id="compare_2">
-                <select class="base-select" id="second_select">
-                    {% for file in valid_files %}
-                        <option id="2:{{ file.id }}" value="{{ file.id }}">{{ file.display_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </td>
-        </tr>
-    </table>
-    <br>
-    <h3>Column to Compare</h3>
-    <div id="head_select_div"></div>
-
+        {% endif %}
+        <hr>
+        <input class="btn btn-primary" type="submit" value="Submit">
+    </form>
 </div>
 </body>
 
@@ -66,7 +87,7 @@
         //$("#first_select option[value='"+ select_2_val + "']").attr('disabled', true).siblings().removeAttr('disabled');
 
         $.get(BASE_URL + select_1_val, function(response){
-            var selectList = "Column: <select name='header_select' class='base-select'>";
+            var selectList = "Column: <select name='header' class='base-select'>";
 
             let headers = response.headers;
             $(headers).each(function(){
@@ -93,7 +114,7 @@
         }
 
         $.get(BASE_URL + select_1_val, function(response){
-            var selectList = "Column: <select name='header_select' class='base-select'>";
+            var selectList = "Column: <select name='header' class='base-select'>";
 
             let headers = response.headers;
             $(headers).each(function(){

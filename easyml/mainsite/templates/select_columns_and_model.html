@@ -21,7 +21,7 @@
         <tr>
             {% for header in headers %}
             <th>
-                <select class="custom-select" name="{{ header }}">
+                <select class="custom-select base-select" name="{{ header }}">
                   <option value="ignore">Ignore</option>
                   <option value="input">Input</option>
                   <option value="target">Target</option>
@@ -32,7 +32,7 @@
     </table>
     <hr>
     <h4>Select Model: </h4>
-    <select class="align-r custom-select" name="model_select">
+    <select class="align-r custom-select base-select" name="model_select">
         {% for model in valid_models %}
             <option value="{{ model.id }}">{{ model.display_name }}  ({{ model.accuracy_type }} : {{ model.accuracy }})</option>
         {% endfor %}

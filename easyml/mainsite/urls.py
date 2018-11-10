@@ -17,6 +17,7 @@ urlpatterns = [
     path('train/setup/select-csv/<str:purpose>', views.select_csv, name='select_csv'),
     path('predict/setup/select-csv/<str:purpose>', views.select_csv, name='select_csv'),
     path('compare/setup/', views.select_compare, name='select_compare'),
+    path('compare/compare-files/', views.compare_files, name='compare_files'),
     path('train/setup/select-columns/', views.select_columns_and_alg, name='select_columns_and_alg'),
     path('predict/setup/select-columns/', views.select_columns_and_model, name='select_columns_and_model'),
     path('train/setup/create-data/', views.create_data, name='create_data'),
