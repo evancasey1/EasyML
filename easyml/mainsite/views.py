@@ -361,9 +361,14 @@ def compare_files(request):
 
     context['accuracy'] = acc
     context['accuracy_type'] = accuracy_type
-    context['method'] = method_sm
+    context['method_sm'] = method_sm
+    context['method'] = method
     context['header'] = header
     context['num_rows'] = len(first_data)
+    context['f1_name'] = CsvFile.objects.get(id=ffid).display_name
+    context['f2_name'] = CsvFile.objects.get(id=sfid).display_name
+    context['ffid'] = ffid
+    context['sfid'] = sfid
 
     return render(request, 'compare_data.html', context=context)
 
