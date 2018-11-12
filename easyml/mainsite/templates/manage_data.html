@@ -22,7 +22,7 @@
                     <form action="rename-file/" method="post">
                     {% csrf_token %}
                         <input type="text" name="file_id" value="{{ file.id }}" hidden>
-                        <td><input type="text" name="display_name" value="{{ file.display_name }}"></td>
+                        <td><input type="text" name="display_name" value="{{ file.display_name }}" style="width: 100%;"></td>
                         <td><input class="btn btn-primary" type="submit" value="Rename"></td>
                         <td><a class="btn btn-danger" href="{% url 'delete_file' file.id %}">Delete</a></td>
                     </form>

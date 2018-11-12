@@ -40,6 +40,7 @@ def upload_csv(request, next=None):
     if "GET" == request.method:
         return render(request, "upload_csv.html", data)
 
+    csv_obj_id = None
     # if not GET, then proceed
     try:
         csv_file = request.FILES["csv_file"]
@@ -50,13 +51,19 @@ def upload_csv(request, next=None):
             messages.error(request, "Uploaded file is too big (%.2f MB)" % (csv_file.size / (1000 * 1000),))
             return HttpResponseRedirect(reverse("upload_csv"))
 
-        csv_name = csv_file.name[:-4]
+        ext_index = csv_file.name.find('.')
+        if ext_index == -1:
+            csv_name = csv_file.name
+        else:
+            csv_name = csv_file.name[0:ext_index]
+
         user = request.user
         if CsvFile.objects.filter(raw_name=csv_file.name, file_owner=user).exists():
             csv_name = (csv_name + ' (%s)') % CsvFile.objects.filter(raw_name=csv_file.name, file_owner=user).count()
 
         csv_obj = CsvFile(raw_name=csv_file.name, display_name=csv_name, file_owner=user)
         csv_obj.save()
+        csv_obj_id = csv_obj.id
 
         if file_type == 'comma':
             file_data = pd.read_csv(csv_file)
@@ -74,6 +81,10 @@ def upload_csv(request, next=None):
                 if pd.isna(row[header]) or 'unnamed' in header.lower():
                     continue
                 data_obj = CsvFileData(parent_file=csv_obj)
+                try:
+                    int(row[header])
+                except:
+                    continue
                 data_obj.data = row[header]
                 data_obj.row_num = row_index
                 data_obj.column_num = i
@@ -87,8 +98,10 @@ def upload_csv(request, next=None):
         CsvFileData.objects.bulk_create(csv_data)
 
     except Exception as e:
-        print(traceback.format_exc(e))
+        if csv_obj_id and CsvFile.objects.filter(id=csv_obj_id).count() > 0:
+            CsvFile.objects.get(id=csv_obj_id).delete()
         messages.error(request, "Unable to upload file. " + repr(e))
+        return HttpResponseRedirect('/easyml/upload/csv')
 
     #messages.success(request, "File successfully uploaded")
 
@@ -316,6 +329,7 @@ def select_compare(request):
 
 
 def run_model(request):
+    from pprint import pprint
     if request.method == 'GET':
         select_model(request)
 
@@ -349,17 +363,47 @@ def run_model(request):
     file_obj = CsvFile.objects.get(id=file_id)
     model_obj = MLModel.objects.get(id=model_id)
 
-    csv_data = run_model_predict(file_obj, model_obj)
+    filename = "{}-results".format(model_obj.display_name.replace(" ", ""))
+
+    csv_data, file_data = run_model_predict(file_obj, model_obj)
     raw_rows = csv_data.split('\n')
     row_data = []
     for row in raw_rows:
         row_data.append(row.split(','))
 
+    csv_name = filename
+    user = request.user
+    if CsvFile.objects.filter(raw_name=filename, file_owner=user).exists():
+        csv_name = (filename + ' (%s)') % CsvFile.objects.filter(raw_name=filename, file_owner=user).count()
+
+    csv_obj = CsvFile(raw_name=filename, display_name=csv_name, file_owner=user)
+    csv_obj.save()
+
+    columns = list(file_data.columns.values)
+
+    csv_data = []
+    for row_index, row in file_data.iterrows():
+        for i in range(len(columns)):
+            header = columns[i]
+            if pd.isna(row[header]) or 'unnamed' in header.lower():
+                continue
+            data_obj = CsvFileData(parent_file=csv_obj)
+            data_obj.data = row[header]
+            data_obj.row_num = row_index
+            data_obj.column_num = i
+            data_obj.column_header = header
+            csv_data.append(data_obj)
+
+        if len(csv_data) > 500:
+            CsvFileData.objects.bulk_create(csv_data)
+            csv_data = []
+
+    CsvFileData.objects.bulk_create(csv_data)
+
     pseudo_buffer = Echo()
     writer = csv.writer(pseudo_buffer)
     response = StreamingHttpResponse((writer.writerow(row) for row in row_data), content_type="text/csv")
 
-    response['Content-Disposition'] = 'attachment; filename="{}-results.csv"'\
-        .format(model_obj.display_name.replace(" ", ""))
+    response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
 
     return response

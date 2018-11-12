@@ -50,5 +50,4 @@ def run_model_predict(file_obj, model_obj):
     concat_df = pd.concat([input_df, results], axis=1)
     csv_data = concat_df.to_csv()
 
-    print(csv_data)
-    return csv_data
+    return csv_data, concat_df

@@ -146,6 +146,7 @@ tr.table-head {
   position: relative;
   font-family: Arial;
   background-color: lightgrey;
+  width: 80px;
 }
 
 .base-num-select {
