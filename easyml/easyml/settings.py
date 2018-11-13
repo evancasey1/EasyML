@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'easyml',
     'restapi',
     'bootstrap4',
-    'rest_framework'
+    'rest_framework',
+    'django_extensions',
 ]
 
 AUTH_USER_MODEL = 'mainsite.CustomUser'
