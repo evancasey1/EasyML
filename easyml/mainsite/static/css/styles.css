@@ -149,6 +149,13 @@ tr.table-head {
   width: 80px;
 }
 
+.base-select-auto {
+  position: relative;
+  font-family: Arial;
+  background-color: lightgrey;
+  width: auto;
+}
+
 .base-num-select {
     position: relative;
     width: 10%;

@@ -16,7 +16,7 @@
             <tr>
             <td>
                 <div id="compare_1">
-                    <select class="base-select" id="first_select" name="first_file">
+                    <select class="base-select-auto" id="first_select" name="first_file">
                         {% for file in valid_files %}
                             <option id="1:{{ file.id }}" value="{{ file.id }}">{{ file.display_name }}</option>
                         {% endfor %}
@@ -28,7 +28,7 @@
             </td>
             <td>
                 <div id="compare_2">
-                    <select class="base-select" id="second_select" name="second_file">
+                    <select class="base-select-auto" id="second_select" name="second_file">
                         {% for file in valid_files %}
                             <option id="2:{{ file.id }}" value="{{ file.id }}">{{ file.display_name }}</option>
                         {% endfor %}
@@ -40,12 +40,12 @@
         <hr>
         <h3>Column to Compare</h3>
         <div id="head_select_div">
-            Column: <select class="base-select"></select>
+            Column: <select class="base-select-auto"></select>
         </div>
         <hr>
         <h3>Method</h3>
         <div id="method_div">
-            <select class="base-select" name="method" id="method_select">
+            <select class="base-select-auto" name="method" id="method_select">
                 <option id="Accuracy" selected>Accuracy [classification]</option>
                 <option id="Correlation">Correlation [regression]</option>
             </select>
@@ -129,7 +129,7 @@
         }
 
         $.get(HEADER_BASE_URL + select_1_val, function(response){
-            var selectList = "Column: <select name='header' id='header_select' class='base-select'>";
+            var selectList = "Column: <select name='header' id='header_select' class='base-select-auto'>";
             let headers = response.headers;
             $(headers).each(function(){
                 selectList += "<option value='" + this + "'>" + this + "</option>";
@@ -155,7 +155,7 @@
         }
 
         $.get(HEADER_BASE_URL + select_1_val, function(response){
-            var selectList = "Column: <select name='header' id='header_select' class='base-select'>";
+            var selectList = "Column: <select name='header' id='header_select' class='base-select-auto'>";
 
             let headers = response.headers;
             $(headers).each(function(){

@@ -21,7 +21,7 @@
         <tr>
             {% for header in headers %}
             <th style="padding: 15px;">
-                <select class="custom-select base-select" name="{{ header }}">
+                <select class="custom-select base-select-auto" name="{{ header }}">
                   <option value="ignore">Ignore</option>
                   <option value="input" selected="selected">Input</option>
                   <option value="target">Target</option>
@@ -66,7 +66,7 @@
             <tr>
                 <td>Penalty</td>
                 <td style="text-align: right">
-                    <select class="base-select" name="logreg_penalty">
+                    <select class="base-select-auto" name="logreg_penalty">
                         <option value="l1">l1</option>
                         <option value="l2" selected="selected">l2</option>
                     </select>
@@ -76,7 +76,7 @@
                 <td>Penalty Parameter C</td>
                 <td style="text-align: right">
                     <input type="number" value="1.0" class="base-num-select" style="width: 80px; display: none" min="0" name="logreg_C" id="logreg_C_number">
-                    <select class="base-select" name="logreg_C_select" id="logreg_C_select_id">
+                    <select class="base-select-auto" name="logreg_C_select" id="logreg_C_select_id">
                         <option value="auto" selected="selected">Automatic</option>
                         <option value="custom">Custom</option>
                     </select>
@@ -93,7 +93,7 @@
             <tr>
                 <td>Solver</td>
                 <td style="text-align: right">
-                    <select class="base-select" name="lda_solver">
+                    <select class="base-select-auto" name="lda_solver">
                         <option value="svd" selected="selected">Singular Value Decomposition</option>
                         <option value="lsqr">Least Squares</option>
                         <option value="eigen">Eigenvalue Decomposition</option>
@@ -107,7 +107,7 @@
             <tr>
                 <td>Solver</td>
                 <td style="text-align: right">
-                    <select class="base-select" name="dtr_criterion">
+                    <select class="base-select-auto" name="dtr_criterion">
                         <option value="mse" selected="selected">Mean Squared Error</option>
                         <option value="friedman_mse">Friedman Mean Squared Error</option>
                         <option value="mae">Mean Absolute Error</option>
@@ -118,7 +118,7 @@
                 <td>Max Depth</td>
                 <td style="text-align: right">
                     <input type="number" value="5" class="base-num-select" min="0" name="rfc_custom_depth" id="dtr_max_depth_custom" style="width: 80px; display: none;">
-                    <select class="base-select" name="dtr_max_depth" id="dtr_max_depth_select">
+                    <select class="base-select-auto" name="dtr_max_depth" id="dtr_max_depth_select">
                         <option value="none" selected="selected">Default</option>
                         <option value="auto">Automatic</option>
                         <option value="custom">Custom Depth</option>
@@ -140,7 +140,7 @@
             <tr>
                 <td>Criterion</td>
                 <td style="text-align: right">
-                    <select class="base-select" name="rfc_criterion">
+                    <select class="base-select-auto" name="rfc_criterion">
                         <option value="gini" selected="selected">Gini Impurity</option>
                         <option value="entropy">Information Gain Entropy</option>
                     </select>
@@ -150,7 +150,7 @@
                 <td>Max Depth</td>
                 <td style="text-align: right">
                     <input type="number" value="5" class="base-num-select" min="0" name="rfc_custom_depth" id="rfc_max_depth_custom" style="width: 80px; display: none;">
-                    <select class="base-select" name="rfc_max_depth" id="rfc_max_depth_select">
+                    <select class="base-select-auto" name="rfc_max_depth" id="rfc_max_depth_select">
                         <option value="none" selected="selected">Default</option>
                         <option value="auto">Automatic</option>
                         <option value="custom">Custom Depth</option>
@@ -168,7 +168,7 @@
             <tr>
                 <td>Criterion</td>
                 <td style="text-align: right">
-                    <select class="base-select" name="rfr_criterion">
+                    <select class="base-select-auto" name="rfr_criterion">
                         <option value="mse" selected="selected">Mean Squared Error</option>
                         <option value="mae">Mean Absolute Error</option>
                     </select>
@@ -178,7 +178,7 @@
                 <td>Max Depth</td>
                 <td style="text-align: right">
                     <input type="number" value="5" class="base-num-select" min="0" name="rfr_custom_depth" id="rfr_max_depth_custom" style="width: 80px; display: none;">
-                    <select class="base-select" name="rfr_max_depth" id="rfr_max_depth_select">
+                    <select class="base-select-auto" name="rfr_max_depth" id="rfr_max_depth_select">
                         <option value="none" selected="selected">Default</option>
                         <option value="auto">Automatic</option>
                         <option value="custom">Custom Depth</option>
@@ -200,7 +200,7 @@
             <tr>
                 <td>Algorithm</td>
                 <td style="text-align: right">
-                    <select class="base-select" name="nnc_algorithm">
+                    <select class="base-select-auto" name="nnc_algorithm">
                         <option value="auto" selected="selected">Automatic</option>
                         <option value="ball_tree">Ball Tree</option>
                         <option value="kd_tree">k-d Tree</option>
@@ -211,7 +211,7 @@
             <tr>
                 <td>Weights</td>
                 <td style="text-align: right">
-                    <select class="base-select" name="nnc_weights">
+                    <select class="base-select-auto" name="nnc_weights">
                         <option value="uniform" selected="selected">Uniform</option>
                         <option value="distance">Distance</option>
                     </select>
@@ -232,7 +232,7 @@
             <tr>
                 <td>Algorithm</td>
                 <td style="text-align: right">
-                    <select class="base-select" name="nnr_algorithm">
+                    <select class="base-select-auto" name="nnr_algorithm">
                         <option value="auto" selected="selected">Automatic</option>
                         <option value="ball_tree">Ball Tree</option>
                         <option value="kd_tree">k-d Tree</option>
@@ -243,7 +243,7 @@
             <tr>
                 <td>Weights</td>
                 <td style="text-align: right">
-                    <select class="base-select" name="nnr_weights">
+                    <select class="base-select-auto" name="nnr_weights">
                         <option value="uniform" selected="selected">Uniform</option>
                         <option value="distance">Distance</option>
                     </select>
@@ -262,7 +262,7 @@
                 <td style="text-align: right">
                     <label for="svc_degree_number" style="display: none;" id="svc_degree_number_label">Degree:</label>
                     <input type="number" value="3" class="base-num-select" min="0" name="svc_degree" id="svc_degree_number" style="width: 80px; display: none;">
-                    <select class="base-select" name="svc_kernel" id="svc_degree_select">
+                    <select class="base-select-auto" name="svc_kernel" id="svc_degree_select">
                         <option value="rbf" selected="selected">Radial Basis Function</option>
                         <option value="linear">Linear Function</option>
                         <option value="poly">Polynomial Function</option>
@@ -279,7 +279,7 @@
                 <td style="text-align: right">
                     <label for="svr_degree_number" style="display: none;" id="svr_degree_number_label">Degree:</label>
                     <input type="number" value="3" class="base-num-select" min="0" name="svr_degree" id="svr_degree_number" style="width: 80px; display: none;">
-                    <select class="base-select" name="svr_kernel" id="svr_degree_select">
+                    <select class="base-select-auto" name="svr_kernel" id="svr_degree_select">
                         <option value="rbf" selected="selected">Radial Basis Function</option>
                         <option value="linear">Linear Function</option>
                         <option value="poly">Polynomial Function</option>

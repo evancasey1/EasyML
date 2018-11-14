@@ -12,7 +12,7 @@ from matplotlib import pylab
 from pylab import *
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
-from helpers.constants import COLUMN_TYPE, ALGORITHM_NAME_MAP
+from helpers.constants import COLUMN_TYPE, ALGORITHM_NAME_MAP, PLOT_FEATURE_CAP
 from helpers.model_builder import create_model
 from helpers.model_predict import run_model_predict
 from helpers.util import *
@@ -74,18 +74,19 @@ def upload_csv(request, next=None):
 
         columns = list(file_data.columns.values)
 
+        from pprint import pprint
+        pprint(columns)
         csv_data = []
         for row_index, row in file_data.iterrows():
             for i in range(len(columns)):
                 header = columns[i]
-                if pd.isna(row[header]) or 'unnamed' in header.lower():
+                if 'unnamed' in header.lower():
                     continue
                 data_obj = CsvFileData(parent_file=csv_obj)
                 try:
-                    int(row[header])
+                    data_obj.data = row[header]
                 except:
-                    continue
-                data_obj.data = row[header]
+                    data_obj.data = np.nan
                 data_obj.row_num = row_index
                 data_obj.column_num = i
                 data_obj.column_header = header
@@ -238,7 +239,7 @@ def select_columns_and_alg(request):
 
     file_data = CsvFileData.objects.filter(parent_file_id=file_id).order_by('column_num')
 
-    if len(set(file_data.values_list('column_num', flat=True))) <= 8:
+    if len(set(file_data.values_list('column_num', flat=True))) <= PLOT_FEATURE_CAP:
         f = matplotlib.figure.Figure()
         buf = io.BytesIO()
 
@@ -329,7 +330,6 @@ def select_compare(request):
 
 
 def run_model(request):
-    from pprint import pprint
     if request.method == 'GET':
         select_model(request)
 

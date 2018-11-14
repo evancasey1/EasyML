@@ -1,3 +1,5 @@
+PLOT_FEATURE_CAP = 8
+
 class COLUMN_TYPE:
     IGNORE = 0
     INPUT = 1

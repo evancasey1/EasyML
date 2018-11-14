@@ -12,7 +12,7 @@
     <form action="/easyml/predict/run-model/" method="post">
     {% csrf_token %}
     <input type="text" name="file_id" value="{{ file_id }}" hidden>
-    <table class="column-select-table center">
+    <table class="column-select-table left">
         <tr style="background-color: black; line-height: 30px">
         {% for header in headers %}
             <th style="color: lightgrey">{{ header }}</th>
@@ -20,7 +20,7 @@
         </tr>
         <tr>
             {% for header in headers %}
-            <th>
+            <th style="padding: 15px;">
                 <select class="custom-select base-select" name="{{ header }}">
                   <option value="ignore">Ignore</option>
                   <option value="input" selected>Input</option>
@@ -32,7 +32,7 @@
     </table>
     <hr>
     <h4>Select Model: </h4>
-    <select class="align-r custom-select base-select" name="model_select">
+    <select class="align-r custom-select base-select-auto" name="model_select">
         {% for model in valid_models %}
             <option value="{{ model.id }}">{{ model.display_name }}  ({{ model.accuracy_type }} : {{ model.accuracy }})</option>
         {% endfor %}
