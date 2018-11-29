@@ -32,7 +32,7 @@ def create_model(algorithm_type_num, file_id, parameters):
     target_data = file_data.filter(type=COLUMN_TYPE.TARGET)
 
     model = None
-    alg_type = ALGORITHM_NAME_MAP[str(algorithm_type_num)]
+    alg_type = ALGORITHM_NAME_MAP[algorithm_type_num]
 
     input_df = get_dataframe(input_data)
     target_df = get_dataframe(target_data)

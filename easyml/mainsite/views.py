@@ -74,8 +74,6 @@ def upload_csv(request, next=None):
 
         columns = list(file_data.columns.values)
 
-        from pprint import pprint
-        pprint(columns)
         csv_data = []
         for row_index, row in file_data.iterrows():
             for i in range(len(columns)):
@@ -289,7 +287,7 @@ def create_data(request):
     }
 
     file_id = int(request.POST.get('file_id'))
-    alg_id = request.POST.get('algorithm')
+    alg_id = int(request.POST.get('algorithm'))
     header_map = {}
     file_headers = CsvFileData.objects.filter(parent_file_id=file_id).values_list('column_header', flat=True).distinct()
     for head in file_headers:
@@ -307,8 +305,7 @@ def create_data(request):
         messages.error(request, str(e))
         return render(request, 'select_columns_and_alg.html', context=error_context)
 
-    algorithm_type = int(alg_id)
-    create_model(algorithm_type, file_id, parameters)
+    create_model(alg_id, file_id, parameters)
 
     return HttpResponseRedirect('/easyml/')
 
