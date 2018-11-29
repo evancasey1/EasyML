@@ -3,7 +3,7 @@
 {% block content %}
 <body>
 <div class="main">
-    <p class="page-header">File Upload</p>
+    <p class="page-header">Data Upload</p>
     <div class="center">
         <form action="{% url 'upload_csv' %}" method="POST" enctype="multipart/form-data" class="form-horizontal">
             {% csrf_token %}
