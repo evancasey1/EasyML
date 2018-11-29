@@ -56,15 +56,30 @@ class GetAccuracy(BaseUserView):
         ffid = int(ffid)
         sfid = int(sfid)
 
-        first_data = CsvFileData.objects.filter(parent_file_id=ffid,
-                                                column_header=header) \
-            .order_by('row_num') \
-            .values_list('data', flat=True)
+        first_data_raw = CsvFileData.objects.filter(parent_file_id=ffid,
+                                                    column_header=header) \
+            .order_by('row_num')
 
-        second_data = CsvFileData.objects.filter(parent_file_id=sfid,
-                                                 column_header=header) \
-            .order_by('row_num') \
-            .values_list('data', flat=True)
+        second_data_raw = CsvFileData.objects.filter(parent_file_id=sfid,
+                                                     column_header=header) \
+            .order_by('row_num')
+
+        itos_map1 = get_itos_map(ffid)
+        itos_map2 = get_itos_map(sfid)
+
+        first_data = []
+        for dpoint in first_data_raw:
+            if dpoint.column_header in itos_map1:
+                first_data.append(itos_map1[dpoint.column_header][dpoint.data])
+            else:
+                first_data.append(dpoint.data)
+
+        second_data = []
+        for dpoint in second_data_raw:
+            if dpoint.column_header in itos_map2:
+                second_data.append(itos_map2[dpoint.column_header][dpoint.data])
+            else:
+                second_data.append(dpoint.data)
 
         if len(first_data) != len(second_data):
             messages = []

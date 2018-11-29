@@ -372,6 +372,7 @@ def run_model(request):
 
     file_obj = CsvFile.objects.get(id=file_id)
     model_obj = MLModel.objects.get(id=model_id)
+    model_parent_file_id = model_obj.parent_file.id
 
     filename = "{}-results".format(model_obj.display_name.replace(" ", ""))
 
@@ -391,6 +392,7 @@ def run_model(request):
 
     columns = list(file_data.columns.values)
 
+    csv_stoi_map = get_stoi_map(model_parent_file_id)
     csv_data = []
     for row_index, row in file_data.iterrows():
         for i in range(len(columns)):
@@ -398,7 +400,12 @@ def run_model(request):
             if pd.isna(row[header]) or 'unnamed' in header.lower():
                 continue
             data_obj = CsvFileData(parent_file=csv_obj)
-            data_obj.data = row[header]
+            if header in csv_stoi_map:
+                data_obj.data = csv_stoi_map[header][row[header]]
+                data_obj.placeholder = row[header]
+            else:
+                data_obj.data = row[header]
+
             data_obj.row_num = row_index
             data_obj.column_num = i
             data_obj.column_header = header

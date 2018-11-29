@@ -13,6 +13,7 @@ class Echo:
         """Write the value by returning it, instead of storing in a buffer."""
         return value
 
+
 def get_dataframe(qry_data):
     column_headers = qry_data.values_list('column_header', flat=True).distinct()
     column_data = {}
@@ -21,6 +22,43 @@ def get_dataframe(qry_data):
         column_data[header] = [d.data for d in header_data]
 
     return pd.DataFrame.from_dict(column_data)
+
+
+# Gets the map of data for a file to their placeholders
+# Int to String
+def get_itos_map(file_id):
+    file_obj = CsvFile.objects.get(id=file_id)
+    placeholder_data = CsvFileData.objects.filter(parent_file=file_obj).exclude(placeholder=None)
+
+    itos_map = {}
+    for pdata in placeholder_data:
+        header = pdata.column_header
+        if header not in itos_map:
+            itos_map[header] = {}
+
+        placeholder = pdata.placeholder
+        if placeholder not in itos_map[header]:
+            itos_map[header][pdata.data] = placeholder
+
+    return itos_map
+
+# Gets the map of placeholders for a file to their data
+# String to Int
+def get_stoi_map(file_id):
+    file_obj = CsvFile.objects.get(id=file_id)
+    placeholder_data = CsvFileData.objects.filter(parent_file=file_obj).exclude(placeholder=None)
+
+    stoi_map = {}
+    for pdata in placeholder_data:
+        header = pdata.column_header
+        if header not in stoi_map:
+            stoi_map[header] = {}
+
+        placeholder = pdata.placeholder
+        if placeholder not in stoi_map[header]:
+            stoi_map[header][placeholder] = pdata.data
+
+    return stoi_map
 
 
 def set_column_types(file_id, header_map):
@@ -48,6 +86,7 @@ def get_user_models(user):
     user_files = get_user_files(user)
     return MLModel.objects.filter(parent_file__in=user_files)
 
+
 def get_alg_lst():
     alg_lst = []
     for alg in ALGORITHM_NAME_MAP:
@@ -57,6 +96,7 @@ def get_alg_lst():
         })
 
     return sorted(alg_lst, key=itemgetter('num'))
+
 
 def get_r2(y_pred, y_test):
     n = len(y_test)
@@ -69,6 +109,7 @@ def get_r2(y_pred, y_test):
 
     return round(1 - (ss_res/ss_tot), 4)
 
+
 def get_match_acc(y_pred, y_test):
     n = len(y_test)
     if n == 0:
@@ -80,6 +121,7 @@ def get_match_acc(y_pred, y_test):
             correct += 1
 
     return round((correct / n) * 100.0, 4)
+
 
 def to_percent(val, n=4):
     return round((val * 100), n)
