@@ -33,6 +33,7 @@ class CsvFileData(models.Model):
         on_delete=models.CASCADE)
     column_header = models.CharField(max_length=255)
     data = models.FloatField(null=True, blank=True)
+    placeholder = models.TextField(null=True, blank=True)
     row_num = models.IntegerField(null=False, blank=False)
     column_num = models.IntegerField(null=False, blank=False)
     type = models.IntegerField(null=True, blank=True)

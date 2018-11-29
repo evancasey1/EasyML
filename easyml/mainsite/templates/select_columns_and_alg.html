@@ -41,16 +41,28 @@
         <br>
     </div>
     <div style="float:right; width: 50%;" id="alg_desc">
-        <p id="alg_desc_p">
-        Linear Regression is a method of modeling a linear relationship between dependent variables and independent variables.<br>This model is used for predicting numerical values for simple relationships.
-        </p>
+        <p id="alg_desc_p">This setting will automatically pick the best algorithm for your data.<br><br><br></p>
     </div>
     <hr>
     <div style="clear: both"></div>
     <div id="hyperparameters" style="display: block">
         <h4 id="tune_header">Tune Algorithm Settings</h4>
+
+        <!-- AUTOMATIC !-->
+        <table class="hp-table" id="automatic" style="display: block">
+            <tr>
+                <td>Prediction Type</td>
+                <td style="text-align: right">
+                    <select class="base-select-auto" name="auto_alg_type">
+                        <option value="auto_classification" selected="selected">Classification</option>
+                        <option value="auto_regression">Regression</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
         <!-- LINEAR REGRESSION !-->
-        <table class="hp-table" id="linear_regression" style="display: block">
+        <table class="hp-table" id="linear_regression" style="display: none">
             <tr>
                 <td>Fit Intercept</td>
                 <td style="text-align: right"><label class="switch"><input type="checkbox" name="linreg_fit_intercept" checked><span class="slider round"></span></label></td>
@@ -384,7 +396,12 @@
         var alg_type = $("#alg_select option:selected").text();
         var text = "";
         $("#hyperparameters").children().hide();
-        if (alg_type === 'Linear Regression') {
+        if (alg_type === 'Automatic') {
+            $('#automatic').show();
+            $("#tune_header").show();
+            text = 'This setting will automatically pick the best algorithm for your data.\n\n\n'
+        }
+        else if (alg_type === 'Linear Regression') {
             $('#linear_regression').show();
             $("#tune_header").show();
             text = 'Linear Regression is a method of modeling a linear relationship between dependent variables and independent variables.\n' +

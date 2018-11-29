@@ -74,6 +74,7 @@ def upload_csv(request, next=None):
 
         columns = list(file_data.columns.values)
 
+        csv_stoi_map = {}
         csv_data = []
         for row_index, row in file_data.iterrows():
             for i in range(len(columns)):
@@ -81,10 +82,22 @@ def upload_csv(request, next=None):
                 if 'unnamed' in header.lower():
                     continue
                 data_obj = CsvFileData(parent_file=csv_obj)
-                try:
+
+                if not isinstance(row[header], int) and not isinstance(row[header], float):
+                    str_val = row[header]
+                    data_obj.placeholder = str_val
+
+                    if header not in csv_stoi_map:
+                        csv_stoi_map[header] = {}
+                    if str_val not in csv_stoi_map[header]:
+                        row_data = len(csv_stoi_map[header].keys())
+                        csv_stoi_map[header][str_val] = row_data
+
+                    data_obj.data = csv_stoi_map[header][str_val]
+
+                else:
                     data_obj.data = row[header]
-                except:
-                    data_obj.data = np.nan
+
                 data_obj.row_num = row_index
                 data_obj.column_num = i
                 data_obj.column_header = header
