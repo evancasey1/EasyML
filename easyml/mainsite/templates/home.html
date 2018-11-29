@@ -10,8 +10,61 @@
   <body>
     <div class="main">
         <p class="page-header">Welcome to EasyML</p>
-
-        <p>Get started by uploading data and training a model, then simply use that model on any dataset of your choice!</p>
+        <h4>What does EasyML offer?</h4>
+        <ul>
+            <li>The Ability to Create and Use Machine Learning Models in a Matter of Seconds</li>
+            <li>Automatic Algorithm Selection to Best Fit Your Data with Minimal Configuration</li>
+            <li>11 Classification and Regression Algorithms with Advanced Settings</li>
+            <li>Easy File Upload and Management, with Support For Many Different File Formats</li>
+            <li>Estimates of Model Performance Right After Training</li>
+        </ul>
+        <div>
+            New to EasyML? Get started with the tutorial.<br>
+            <button id="tutorial_button" class="btn btn-primary">Show Tutorial</button>
+        </div>
+        <div id="tutorial" style="display: block">
+            <hr>
+            <h3>Tutorial</h3>
+            Welcome to EasyML! In this tutorial we will be creating and testing a machine learning model on the <a href="https://en.wikipedia.org/wiki/Iris_flower_data_set">Iris flower data set</a>
+            with the goal of correctly classifying species of Iris flowers based on some basic features of the flower.<br><br>
+            Get started by uploading the data you'd like to train your model with by navigating to the <strong>Upload Data</strong> tab to the left.
+            <br>
+            <br>
+            <img class="tut-img" src="/static/img/tutorial/data_upload_1.png">
+            <br>
+            <br>
+            After your data is uploaded, navigate to the <strong>Manage Data</strong> page using the sidebar in order to see your data. Here,
+            two other files are uploaded in addition to <i>iris_train</i>: <i>iris_test</i> and <i>iris_test_unlabeled</i>. <i>iris_test</i> is the "answer key"
+            to the model that will be used to check our answers later, and <i>iris_test_unlabeled</i> will be used to generate predictions made using a model trained on the data in <i>iris_train</i>.
+            <br>
+            <br>
+            <img class="tut-img" src="/static/img/tutorial/manage_data_1.png">
+            <br>
+            <br>
+            After verifying that all necessary data has been uploaded properly, it is time to train the model! Navigate to the <strong>Train Model</strong>
+            tab and select the file you'd like to train your model with.
+            <br>
+            <br>
+            <img class="tut-img" src="/static/img/tutorial/train_model_1.png">
+            <br>
+            <br>
+            When the training data has been selected, you will be redirected to a page with options about how to generate your model.
+            The table at the top of the page contains your data column headers as well as an option for how you would like to handle each one.
+            By default, all data is treated as input to the model. Before moving forward, select the <strong>target</strong> option for the column that you would
+            like to use your model to predict and select the <strong>input</strong> and <strong>ignore</strong> options for columns you'd like to use to make your predictions and
+            ignore entirely, respectively.<br><br>
+            When this step is completed, select your desired algorithm and tune the settings if you'd like. The default settings will produce strong models
+            for general cases, but you may need to change these for better results for your data. When you are satisfied with your settings, click the <strong>submit</strong>
+            button at the bottom of the page.
+            <br>
+            <br>
+            <i class="fa fa-info-circle" style="font-size:20px;color:red;"></i> If the <strong>Automatic</strong> algorithm is selected, be sure that the setting for classification/regression is properly configured.
+            <br>
+            <br>
+            <img class="tut-img" src="/static/img/tutorial/train_model_2.png">
+            <br>
+            <br>
+        </div>
     </div>
   </body>
 {% else %}

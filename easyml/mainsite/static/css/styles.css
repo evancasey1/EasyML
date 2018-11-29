@@ -4,11 +4,6 @@
     list-style: none;
 }
 
-li.sidebar-row a {
-    color: darkred;
-    font-size: 1.7em;
-}
-
 .img-center {
     display: block;
     margin-left: auto;
@@ -223,4 +218,20 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
+ul {
+    padding-left:20px; list-style:none;
+}
+li {
+    margin-bottom:10px;
+}
+ul li:before {
+font-family: 'FontAwesome';
+content: '\f05d';
+margin:0 5px 0 -15px;
+color: black;
+}
 
+.tut-img {
+    border: 3px solid darkred;
+    width: 100%;
+}
