@@ -12,12 +12,10 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.naive_bayes import GaussianNB
 from sklearn import svm
 
-from sklearn.metrics import r2_score
-
-from .constants import COLUMN_TYPE, ALGORITHM, ALGORITHM_NAME_MAP
+from .constants import COLUMN_TYPE, ALGORITHM, ALGORITHM_NAME_MAP, ALGORITHM_TYPES
 from mainsite.models import CsvFile, CsvFileData, MLModel
 from .util import get_dataframe
-from .util import get_r2, get_match_acc, to_percent
+from .util import get_match_acc
 
 
 def create_model(algorithm_type_num, file_id, parameters):
@@ -31,7 +29,6 @@ def create_model(algorithm_type_num, file_id, parameters):
     input_data = file_data.filter(type=COLUMN_TYPE.INPUT).order_by('column_num')
     target_data = file_data.filter(type=COLUMN_TYPE.TARGET)
 
-    model = None
     alg_type = ALGORITHM_NAME_MAP[algorithm_type_num]
 
     input_df = get_dataframe(input_data)
@@ -39,47 +36,70 @@ def create_model(algorithm_type_num, file_id, parameters):
 
     target_df = target_df.values.ravel()
 
-    if algorithm_type_num == ALGORITHM.LINEAR_REGRESSION:
-        model = create_linear_regression_model(input_df, target_df, parameters)
+    algorithm_type_nums = [algorithm_type_num]
+    if algorithm_type_num == ALGORITHM.AUTOMATIC:
+        alg_method = parameters['auto_alg_type']
+        if alg_method == 'auto_classification':
+            algorithm_type_nums = ALGORITHM_TYPES.CLASSIFICATION
+        else:
+            algorithm_type_nums = ALGORITHM_TYPES.REGRESSION
 
-    elif algorithm_type_num == ALGORITHM.K_NEAREST_NEIGHBORS_CLASSIFIER:
-        model = create_k_nearest_neighbors_classifier(input_df, target_df, parameters)
+    best_acc = None
+    best_acc_type = None
+    best_model = None
+    temp_model = None
+    best_alg_type = alg_type
+    for alg_type_num in algorithm_type_nums:
+        if alg_type_num == ALGORITHM.LINEAR_REGRESSION:
+            temp_model = create_linear_regression_model(input_df, target_df, parameters)
 
-    elif algorithm_type_num == ALGORITHM.K_NEAREST_NEIGHBORS_REGRESSOR:
-        model = create_k_nearest_neighbors_regressor(input_df, target_df, parameters)
+        elif alg_type_num == ALGORITHM.K_NEAREST_NEIGHBORS_CLASSIFIER:
+            temp_model = create_k_nearest_neighbors_classifier(input_df, target_df, parameters)
 
-    elif algorithm_type_num == ALGORITHM.LOGISTIC_REGRESSION:
-        model = create_logistic_regression_model(input_df, target_df, parameters)
+        elif alg_type_num == ALGORITHM.K_NEAREST_NEIGHBORS_REGRESSOR:
+            temp_model = create_k_nearest_neighbors_regressor(input_df, target_df, parameters)
 
-    elif algorithm_type_num == ALGORITHM.NEAREST_CENTROID:
-        model = create_nearest_centroid(input_df, target_df, parameters)
+        elif alg_type_num == ALGORITHM.LOGISTIC_REGRESSION:
+            temp_model = create_logistic_regression_model(input_df, target_df, parameters)
 
-    elif algorithm_type_num == ALGORITHM.LINEAR_DISCRIMINANT_ANALYSIS:
-        model = create_linear_discriminant_analysis(input_df, target_df, parameters)
+        elif alg_type_num == ALGORITHM.NEAREST_CENTROID:
+            temp_model = create_nearest_centroid(input_df, target_df, parameters)
 
-    elif algorithm_type_num == ALGORITHM.DECISION_TREE_REGRESSOR:
-        model = create_decision_tree_regressor(input_df, target_df, parameters)
+        elif alg_type_num == ALGORITHM.LINEAR_DISCRIMINANT_ANALYSIS:
+            temp_model = create_linear_discriminant_analysis(input_df, target_df, parameters)
 
-    elif algorithm_type_num == ALGORITHM.GAUSSIAN_NAIVE_BAYES:
-        model = create_gaussian_naive_bayes(input_df, target_df, parameters)
+        elif alg_type_num == ALGORITHM.DECISION_TREE_REGRESSOR:
+            temp_model = create_decision_tree_regressor(input_df, target_df, parameters)
 
-    elif algorithm_type_num == ALGORITHM.RANDOM_FOREST_CLASSIFIER:
-        model = create_random_forest_classifier(input_df, target_df, parameters)
+        elif alg_type_num == ALGORITHM.GAUSSIAN_NAIVE_BAYES:
+            temp_model = create_gaussian_naive_bayes(input_df, target_df, parameters)
 
-    elif algorithm_type_num == ALGORITHM.RANDOM_FOREST_REGRESSOR:
-        model = create_random_forest_regressor(input_df, target_df, parameters)
+        elif alg_type_num == ALGORITHM.RANDOM_FOREST_CLASSIFIER:
+            temp_model = create_random_forest_classifier(input_df, target_df, parameters)
 
-    elif algorithm_type_num == ALGORITHM.SUPPORT_VECTOR_MACHINE_CLASSIFIER:
-        model = create_support_vector_machine_classifier(input_df, target_df, parameters)
+        elif alg_type_num == ALGORITHM.RANDOM_FOREST_REGRESSOR:
+            temp_model = create_random_forest_regressor(input_df, target_df, parameters)
 
-    elif algorithm_type_num == ALGORITHM.SUPPORT_VECTOR_MACHINE_REGRESSOR:
-        model = create_support_vector_machine_regressor(input_df, target_df, parameters)
+        elif alg_type_num == ALGORITHM.SUPPORT_VECTOR_MACHINE_CLASSIFIER:
+            temp_model = create_support_vector_machine_classifier(input_df, target_df, parameters)
 
-    if model:
-        save_model(model, alg_type, algorithm_type_num, file_id, parameters)
+        elif alg_type_num == ALGORITHM.SUPPORT_VECTOR_MACHINE_REGRESSOR:
+            temp_model = create_support_vector_machine_regressor(input_df, target_df, parameters)
+
+        if not best_acc or parameters['accuracy'] > best_acc:
+            best_acc = parameters['accuracy']
+            best_acc_type = parameters['accuracy_type']
+            best_model = temp_model
+            if algorithm_type_num == ALGORITHM.AUTOMATIC:
+                best_alg_type = 'Automatic_' + ALGORITHM_NAME_MAP[alg_type_num]
+            else:
+                best_alg_type = ALGORITHM_NAME_MAP[alg_type_num]
+
+    if best_model:
+        save_model(best_model, best_alg_type, algorithm_type_num, file_id, parameters, best_acc, best_acc_type)
 
 
-def save_model(model, alg_type, algorithm_type_num, file_id, parameters):
+def save_model(model, alg_type, algorithm_type_num, file_id, parameters, best_acc, best_acc_type):
     parent_file = CsvFile.objects.get(id=file_id)
     display_name = "{}_{}".format(parent_file.display_name, alg_type)
 
@@ -97,8 +117,8 @@ def save_model(model, alg_type, algorithm_type_num, file_id, parameters):
     model_obj.display_name = display_name
     model_obj.parameters = json.dumps(parameters)
     model_obj.parent_file = CsvFile.objects.get(id=file_id)
-    model_obj.accuracy = parameters.get('accuracy')
-    model_obj.accuracy_type = parameters.get('accuracy_type')
+    model_obj.accuracy = best_acc
+    model_obj.accuracy_type = best_acc_type
     model_obj.save()
 
 
