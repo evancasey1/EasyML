@@ -20,10 +20,10 @@
         </ul>
         <div>
             <h4>New to EasyML? Get started with the tutorial.</h4>
-            <button id="tutorial_button_show" class="btn btn-primary">Show Tutorial</button>
-            <button id="tutorial_button_hide" class="btn btn-danger" style="display: none">Hide Tutorial</button>
+            <button id="tutorial_button_show" class="btn btn-primary" onclick="show_tutorial()">Show Tutorial</button>
+            <button id="tutorial_button_hide" class="btn btn-danger" style="display: none" onclick="hide_tutorial()">Hide Tutorial</button>
         </div>
-        <div id="tutorial" style="display: block">
+        <div id="tutorial" style="display: none">
             <hr>
             <h3>Tutorial</h3>
             Welcome to EasyML! In this tutorial we will be creating and testing a machine learning model on the <a href="https://en.wikipedia.org/wiki/Iris_flower_data_set">Iris flower data set</a>
@@ -65,10 +65,45 @@
             <img class="tut-img" src="/static/img/tutorial/train_model_2.png">
             <br>
             <br>
-            After the model is trained, you will be able to see it in the <strong>Manage Models</strong> page.
+            After the model is trained, you will be able to see it in the <strong>Manage Models</strong> page. Here, you can edit, delete, and see some basic properties
+            of the model.
             <br>
             <br>
             <img class="tut-img" src="/static/img/tutorial/manage_models_1.png">
+            <br>
+            <br>
+            In order to use the model that you have generated, navigate to the <strong>Use Model</strong> page.<br>
+            <br>
+            You will be instructed to select the file that you would like to use to make predictions. In this case, we will select the
+            <i>iris_test_unlabeled</i> data.
+            <br>
+            <br>
+            <img class="tut-img" src="/static/img/tutorial/use_model_1.png">
+            <br>
+            <br>
+            After selecting the file you'd like to use for model input, you will be met with a page that looks very similar to the model training screen.<br>
+            Simply select the appropriate <strong>target</strong>, <strong>input</strong>, and <strong>ignore</strong> settings for each column, making sure this
+            lines up with the options you selected before training the model.
+            <br>
+            Next, select the model you'd like to use and hit <strong>Submit and Download</strong> in order to download the results. The results will also be stored
+            in EasyML and visible from the <strong>Manage Data</strong> page.
+            <br>
+            <br>
+            <img class="tut-img" src="/static/img/tutorial/use_model_2.png">
+            <br>
+            <br>
+            Finally, make sure your results are accurate! Using the <i>iris_test</i> data, our "answer key", you can verify the accuracy of the predictions that
+            you just made.<br>
+            Select the two files that you'd like to compare, the column to compare, and the comparison method. In this case, we will compare our
+            answer key with the results we just generated from the model we trained<br><br>
+
+            <strong>Accuracy</strong> will measure, as a percentage, how many labels were correctly guessed by the model. This is used for classification problems.<br>
+            <strong>Correlation</strong> will measure, as an R<sup>2</sup> value, how closely the predictions are correlated with the actual answers. This is used for regression problems.<br>
+            <br>
+            Hit <strong>submit</strong> and immediately see your results!
+            <br>
+            <br>
+            <img class="tut-img" src="/static/img/tutorial/compare_data_1.png">
             <br>
             <br>
         </div>
@@ -79,4 +114,17 @@
     <a href="{% url 'login' %}">Sign in</a> |
     <a href="{% url 'signup' %}">Sign up</a>
 {% endif %}
+
+<script>
+    function show_tutorial() {
+        $("#tutorial").show();
+        $("#tutorial_button_show").hide();
+        $("#tutorial_button_hide").show();
+    }
+    function hide_tutorial() {
+        $("#tutorial").hide();
+        $("#tutorial_button_show").show();
+        $("#tutorial_button_hide").hide();
+    }
+</script>
 {% endblock %}

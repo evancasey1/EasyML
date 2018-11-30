@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '#%=w+0cyqm=tcmsibtgwelblop#60ijdu&7k$t=v*9o)41mbx^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get('EASYML_DEBUG', False))
+DEBUG = bool(os.environ.get('EASYML_DEBUG', True))
 
-ALLOWED_HOSTS = ['mlforge.com']
+ALLOWED_HOSTS = ['mlforge.com', 'localhost']
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # Application definition
