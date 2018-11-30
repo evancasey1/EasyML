@@ -17,10 +17,12 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic.base import TemplateView
 from django.conf import settings
+from mainsite.views import index
 from django.conf.urls.static import static
 from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
+    path('', index),
     path('easyml/', TemplateView.as_view(template_name='home.html'), name='home'),
     path('admin/', admin.site.urls),
     path('easyml/', include('mainsite.urls')),
