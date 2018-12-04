@@ -110,8 +110,9 @@ tr.table-head {
 }
 
 .page-header {
-    font-size: 30px;
+    font-size: 36px;
     text-align: center;
+    font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
 }
 
 .alert-success {
