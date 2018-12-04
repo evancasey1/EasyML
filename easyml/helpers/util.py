@@ -7,11 +7,35 @@ from mainsite.models import *
 from helpers.constants import *
 from django.contrib import messages
 from operator import itemgetter
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext as _
 
 class Echo:
     def write(self, value):
         """Write the value by returning it, instead of storing in a buffer."""
         return value
+
+def validate_password_strength(value1, value2):
+    """Validates that a password is as least 7 characters long and has at least
+    1 digit and 1 letter.
+    """
+    min_length = 7
+
+    if value1 != value2:
+        return False, 'Passwords must match.'
+
+    if len(value1) < min_length:
+        return False, 'Password must be at least {0} characters long.'.format(min_length)
+
+    # check for digit
+    if not any(char.isdigit() for char in value1):
+        return False, 'Password must contain at least 1 digit.'
+
+    # check for letter
+    if not any(char.isalpha() for char in value1):
+        return False, 'Password must contain at least 1 letter.'
+
+    return True, ""
 
 
 def get_dataframe(qry_data):

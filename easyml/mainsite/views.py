@@ -24,6 +24,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.http import StreamingHttpResponse
 from django.urls import reverse_lazy, reverse
 from django.views import generic
+from django.contrib.auth import authenticate, login
 from .forms import CustomUserCreationForm
 
 # Create your views here.
@@ -34,6 +35,50 @@ class SignUp(generic.CreateView):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'signup.html'
+
+def user_signup(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        if CustomUser.objects.filter(username=username).count() > 0 or \
+                CustomUser.objects.filter(email=email).count() > 0:
+            messages.error(request, "User already exists")
+
+        else:
+            pw1 = request.POST.get('password1')
+            pw2 = request.POST.get('password2')
+
+            is_valid, error_msg = validate_password_strength(pw1, pw2)
+            if not is_valid:
+                messages.error(request, error_msg)
+
+            else:
+                CustomUser.objects.create_user(username=username, password=pw1, email=email)
+                user = authenticate(username=username, password=pw1)
+                login(request, user)
+    else:
+        messages.error(request, "Sign up failed. Please try again.")
+
+    return HttpResponseRedirect('/easyml/#')
+
+
+def user_login(request):
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+
+    user = authenticate(username=username, password=password)
+
+    if user:
+        login(request, user)
+    else:
+        if CustomUser.objects.filter(username=username).count() > 0:
+            error_msg = " Password incorrect. "
+        else:
+            error_msg = " User not found. "
+
+        messages.error(request, "Sign in failed.{}Please try again".format(error_msg))
+
+    return HttpResponseRedirect('/easyml/')
 
 def upload_csv(request, next=None):
     data = {}

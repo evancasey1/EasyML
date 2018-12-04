@@ -4,7 +4,8 @@ from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('signup/', views.SignUp.as_view(), name='signup'),
+    path('signup/', views.user_signup, name='signup'),
+    path('login/', views.user_login, name='login'),
     path('upload/', TemplateView.as_view(template_name='upload_csv.html'), name='upload'),
     path('upload/csv/', views.upload_csv, name='upload_csv'),
     path('upload/csv/<str:next>/', views.upload_csv, name='upload_csv'),
