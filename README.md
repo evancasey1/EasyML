@@ -1,7 +1,7 @@
 # EasyML
 2018 CS Capstone Project
 
-# View Online Version At MLForge.com
+# View Online Version At MLForge.com (out of service 7/28/2021)
 
 ## Purpose
   This project will consist of developing a simple web application that, on a high level, takes a CSV file of user data as input (training data), and produces an accurate machine learning model that the user can re-use to make predictions on similar datasets. A machine learning model is created, and when the user submits an input table, an output table is returned as a CSV file.
